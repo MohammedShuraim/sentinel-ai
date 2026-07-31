@@ -1,0 +1,31 @@
+flowchart TD
+
+Start([Recommendation Request])
+
+Profile["Investor Profile"]
+
+Memory["Investor Memory"]
+
+Market["Market & Company Data"]
+
+Retriever["Retrieve Supporting Documents"]
+
+Analysis["AI Recommendation Engine"]
+
+Score["Confidence Scoring"]
+
+Recommendation["Personalized Recommendation"]
+
+Start --> Profile
+
+Profile --> Memory
+
+Memory --> Analysis
+
+Market --> Retriever
+
+Retriever --> Analysis
+
+Analysis --> Score
+
+Score --> Recommendation

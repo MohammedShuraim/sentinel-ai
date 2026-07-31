@@ -1,0 +1,39 @@
+flowchart TD
+
+Start([User Opens Application])
+
+Login[Google Login]
+
+Dashboard[Dashboard]
+
+Watchlist[Select or Follow Stock]
+
+Question[Ask Financial Question]
+
+Backend[Backend Processing]
+
+RAG[RAG Retrieval]
+
+AI[GPT-5.5 Analysis]
+
+Answer[Grounded Response]
+
+End([User Receives Answer])
+
+Start --> Login
+
+Login --> Dashboard
+
+Dashboard --> Watchlist
+
+Watchlist --> Question
+
+Question --> Backend
+
+Backend --> RAG
+
+RAG --> AI
+
+AI --> Answer
+
+Answer --> End

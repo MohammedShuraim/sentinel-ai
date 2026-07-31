@@ -1,0 +1,23 @@
+flowchart TD
+
+Conversation([Conversation])
+
+Extract["Memory Extraction"]
+
+Validate["Validation"]
+
+Duplicate["Duplicate Detection"]
+
+Store["Investor Memory"]
+
+Retrieve["Future Retrieval"]
+
+Conversation --> Extract
+
+Extract --> Validate
+
+Validate --> Duplicate
+
+Duplicate --> Store
+
+Store --> Retrieve

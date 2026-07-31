@@ -1,0 +1,71 @@
+flowchart TD
+
+%% ===========================
+%% User Layer
+%% ===========================
+
+User([👤 User])
+
+%% ===========================
+%% Presentation Layer
+%% ===========================
+
+subgraph Presentation["Presentation Layer"]
+    UI["Next.js Frontend"]
+end
+
+%% ===========================
+%% Application Layer
+%% ===========================
+
+subgraph Application["Application Layer"]
+    API["FastAPI Backend"]
+    Auth["Authentication Service"]
+end
+
+%% ===========================
+%% AI Layer
+%% ===========================
+
+subgraph AI["AI Layer"]
+    Agent["LangGraph AI Agent"]
+    Retriever["Retriever"]
+    Memory["Investor Memory"]
+end
+
+%% ===========================
+%% Data Layer
+%% ===========================
+
+subgraph Data["Data Layer"]
+    PG[("PostgreSQL + pgvector")]
+end
+
+%% ===========================
+%% External Services
+%% ===========================
+
+subgraph External["External Services"]
+    GPT["OpenAI GPT-5.5"]
+end
+
+%% ===========================
+%% Flow
+%% ===========================
+
+User --> UI
+
+UI --> API
+
+API --> Auth
+API --> Agent
+
+Agent --> Retriever
+Agent --> Memory
+
+Retriever --> PG
+Memory --> PG
+
+PG --> GPT
+
+GPT --> Response["Grounded Response"]

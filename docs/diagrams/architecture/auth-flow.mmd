@@ -1,0 +1,31 @@
+sequenceDiagram
+
+actor User
+
+participant Frontend
+
+participant Google
+
+participant Backend
+
+participant Database
+
+User->>Frontend: Click Login
+
+Frontend->>Google: OAuth Request
+
+Google-->>Frontend: Authorization Code
+
+Frontend->>Backend: Authorization Code
+
+Backend->>Google: Validate Token
+
+Google-->>Backend: User Information
+
+Backend->>Database: Find or Create User
+
+Database-->>Backend: User Record
+
+Backend-->>Frontend: JWT Session
+
+Frontend-->>User: Dashboard

@@ -1,0 +1,35 @@
+flowchart TD
+
+Question([User Question])
+
+RetrieveMemory["Retrieve Investor Memory"]
+
+VectorSearch["Vector Similarity Search"]
+
+Documents["Relevant Documents"]
+
+Context["Context Builder"]
+
+Prompt["Prompt Construction"]
+
+GPT["OpenAI GPT-5.5"]
+
+Citation["Citation Generator"]
+
+Answer([Grounded Response])
+
+Question --> RetrieveMemory
+
+RetrieveMemory --> VectorSearch
+
+VectorSearch --> Documents
+
+Documents --> Context
+
+Context --> Prompt
+
+Prompt --> GPT
+
+GPT --> Citation
+
+Citation --> Answer

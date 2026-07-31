@@ -1,0 +1,51 @@
+flowchart TD
+
+Developer([Developer])
+
+subgraph Source["Source Control"]
+
+GitHub["GitHub Repository"]
+
+Actions["GitHub Actions"]
+
+end
+
+subgraph Build["Containerization"]
+
+Docker["Docker Build"]
+
+ECR["Amazon ECR"]
+
+end
+
+subgraph Cloud["AWS Cloud"]
+
+Terraform["Terraform"]
+
+ECS["Amazon ECS Fargate"]
+
+ALB["Application Load Balancer"]
+
+RDS["Amazon RDS PostgreSQL"]
+
+CloudWatch["CloudWatch"]
+
+end
+
+Developer --> GitHub
+
+GitHub --> Actions
+
+Actions --> Docker
+
+Docker --> ECR
+
+Actions --> Terraform
+
+Terraform --> ECS
+
+ECS --> ALB
+
+ECS --> RDS
+
+ECS --> CloudWatch

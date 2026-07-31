@@ -1,0 +1,61 @@
+flowchart TD
+
+Client([👤 Client])
+
+subgraph Edge["Edge Layer"]
+    ALB["Application Load Balancer"]
+end
+
+subgraph API["API Layer"]
+
+Middleware["Authentication Middleware"]
+
+Router["FastAPI Router"]
+
+Controller["API Controller"]
+
+Service["Business Service"]
+
+Middleware --> Router
+Router --> Controller
+Controller --> Service
+
+end
+
+subgraph AI["AI Layer"]
+
+Agent["LangGraph Agent"]
+
+Retriever["Retriever"]
+
+Service --> Agent
+
+Agent --> Retriever
+
+end
+
+subgraph Data["Data Layer"]
+
+Postgres[("PostgreSQL")]
+
+Retriever --> Postgres
+
+Service --> Postgres
+
+end
+
+Response["JSON Response"]
+
+Client --> ALB
+
+ALB --> Middleware
+
+Postgres --> Service
+
+Retriever --> Agent
+
+Agent --> Service
+
+Service --> Response
+
+Response --> Client

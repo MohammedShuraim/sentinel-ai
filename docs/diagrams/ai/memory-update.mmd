@@ -1,0 +1,35 @@
+flowchart TD
+
+Conversation([Conversation])
+
+Extract["Extract Candidate Memory"]
+
+Validate["Validate Memory"]
+
+Classify["Classify Memory Type"]
+
+Duplicate["Duplicate Detection"]
+
+Store["Investor Memory"]
+
+Vectorize["Generate Embedding"]
+
+Postgres[("PostgreSQL + pgvector")]
+
+Future["Future Conversations"]
+
+Conversation --> Extract
+
+Extract --> Validate
+
+Validate --> Classify
+
+Classify --> Duplicate
+
+Duplicate --> Store
+
+Store --> Vectorize
+
+Vectorize --> Postgres
+
+Postgres --> Future

@@ -1,0 +1,43 @@
+sequenceDiagram
+
+actor User
+
+participant Frontend as Next.js
+
+participant Middleware as Auth Middleware
+
+participant Router as FastAPI Router
+
+participant Service as Business Service
+
+participant Retriever as Retriever
+
+participant Database as PostgreSQL
+
+participant GPT as OpenAI GPT-5.5
+
+User->>Frontend: Ask Financial Question
+
+Frontend->>Middleware: HTTP Request
+
+Middleware->>Router: Validate JWT
+
+Router->>Service: Route Request
+
+Service->>Retriever: Retrieve Context
+
+Retriever->>Database: Vector Search
+
+Database-->>Retriever: Relevant Documents
+
+Retriever-->>Service: Context
+
+Service->>GPT: Prompt + Context
+
+GPT-->>Service: Grounded Response
+
+Service-->>Router: JSON
+
+Router-->>Frontend: HTTP 200
+
+Frontend-->>User: Display Answer

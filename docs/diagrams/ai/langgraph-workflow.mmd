@@ -1,0 +1,34 @@
+flowchart TD
+
+Start([User Question])
+
+subgraph LangGraph["LangGraph Workflow"]
+
+Input["Receive Query"]
+
+Memory["Retrieve Investor Memory"]
+
+Retriever["Retrieve Relevant Documents"]
+
+Context["Build Context"]
+
+LLM["OpenAI GPT-5.5"]
+
+Validator["Grounding & Validation"]
+
+Output["Generate Response"]
+
+Input --> Memory
+Memory --> Retriever
+Retriever --> Context
+Context --> LLM
+LLM --> Validator
+Validator --> Output
+
+end
+
+End([Grounded Response])
+
+Start --> Input
+
+Output --> End
