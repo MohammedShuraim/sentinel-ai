@@ -5,6 +5,7 @@ from app.api.users import router as user_router
 from app.db.database import engine
 from app.api.auth import router as auth_router
 from app.api.stocks import router as stocks_router
+from app.api.stock import router as stock_router
 
 app = FastAPI(
     title="Sentellent API",
@@ -16,6 +17,7 @@ app = FastAPI(
 app.include_router(user_router)
 app.include_router(auth_router)
 app.include_router(stocks_router)
+app.include_router(stock_router)
 
 
 @app.get("/")
