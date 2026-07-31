@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -9,6 +11,11 @@ from app.crud.stock import (
 )
 from app.db.dependencies import get_db
 from app.schemas.stock import StockCreate, StockRead
+from app.services.stock_import_service import StockImportService
+
+# backend/app/api/stock.py -> parents[2] == backend project root
+BASE_DIR = Path(__file__).resolve().parents[2]
+NSE_STOCKS_CSV = BASE_DIR / "data" / "nse_stocks.csv"
 
 router = APIRouter(
     prefix="/stocks",
@@ -29,6 +36,16 @@ def search(
     db: Session = Depends(get_db),
 ):
     return search_stocks(db, q)
+
+
+@router.post("/import")
+def import_stocks_from_csv(
+    db: Session = Depends(get_db),
+):
+    service = StockImportService()
+    inserted = service.import_stocks(db, str(NSE_STOCKS_CSV))
+
+    return {"inserted": inserted}
 
 
 @router.get("/{ticker}", response_model=StockRead)
