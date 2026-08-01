@@ -1,24 +1,30 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.crud.stock import get_stock_by_ticker
 from app.models.stock_follow import StockFollow
 from app.schemas.stock_follow import StockFollowCreate
 
 
-def _normalize_ticker(ticker: str) -> str:
-    return ticker.strip().upper()
-
-
 def follow_stock(db: Session, user_id: int, stock: StockFollowCreate) -> StockFollow | None:
-    ticker = _normalize_ticker(stock.ticker)
+    db_stock = get_stock_by_ticker(db, stock.ticker)
 
-    if get_followed_stock(db, user_id, ticker) is not None:
+    if db_stock is None:
+        return None
+
+    existing = db.scalars(
+        select(StockFollow).where(
+            StockFollow.user_id == user_id,
+            StockFollow.stock_id == db_stock.id,
+        )
+    ).first()
+
+    if existing is not None:
         return None
 
     db_follow = StockFollow(
         user_id=user_id,
-        ticker=ticker,
-        company_name=stock.company_name,
+        stock_id=db_stock.id,
     )
 
     db.add(db_follow)
@@ -39,9 +45,14 @@ def get_followed_stocks(db: Session, user_id: int) -> list[StockFollow]:
 
 
 def get_followed_stock(db: Session, user_id: int, ticker: str) -> StockFollow | None:
+    db_stock = get_stock_by_ticker(db, ticker)
+
+    if db_stock is None:
+        return None
+
     stmt = select(StockFollow).where(
         StockFollow.user_id == user_id,
-        StockFollow.ticker == _normalize_ticker(ticker),
+        StockFollow.stock_id == db_stock.id,
     )
 
     return db.scalars(stmt).first()

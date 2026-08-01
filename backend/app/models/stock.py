@@ -1,7 +1,12 @@
+from typing import TYPE_CHECKING
+
 from sqlalchemy import Boolean, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
+
+if TYPE_CHECKING:
+    from app.models.stock_follow import StockFollow
 
 
 class Stock(Base):
@@ -41,4 +46,9 @@ class Stock(Base):
         Boolean,
         nullable=False,
         default=True,
+    )
+
+    followers: Mapped[list["StockFollow"]] = relationship(
+        back_populates="stock",
+        cascade="all, delete-orphan",
     )
