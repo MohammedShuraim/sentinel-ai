@@ -8,6 +8,12 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
+    FINNHUB_API_KEY: str = ""
+    FINNHUB_BASE_URL: str = "https://finnhub.io/api/v1"
+
+    MARKETAUX_API_KEY: str = ""
+    MARKETAUX_BASE_URL: str = "https://api.marketaux.com/v1"
+
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore",

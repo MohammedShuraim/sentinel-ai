@@ -5,6 +5,8 @@ from app.crud.news import create_news, get_news, get_news_by_stock
 from app.crud.stock import get_stock_by_ticker
 from app.db.dependencies import get_db
 from app.schemas.news import NewsCreate, NewsRead
+from app.services.news_import_service import NewsImportService
+from app.services.providers.marketaux_provider import MarketauxProvider
 
 router = APIRouter(
     prefix="/news",
@@ -46,6 +48,18 @@ def add_news(
         )
 
     return db_news
+
+
+@router.post("/import")
+def import_news_from_provider(
+    db: Session = Depends(get_db),
+):
+    provider = MarketauxProvider()
+    service = NewsImportService(provider)
+
+    inserted = service.import_news(db)
+
+    return {"inserted": inserted}
 
 
 @router.get("/{ticker}", response_model=list[NewsRead])
