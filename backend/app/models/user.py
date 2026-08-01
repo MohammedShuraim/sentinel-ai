@@ -8,6 +8,7 @@ from app.db.base import Base
 if TYPE_CHECKING:
     from app.models.portfolio import Portfolio
     from app.models.stock_follow import StockFollow
+    from app.models.transaction import Transaction
 
 
 class User(Base):
@@ -38,6 +39,11 @@ class User(Base):
     )
 
     portfolios: Mapped[list["Portfolio"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
+    transactions: Mapped[list["Transaction"]] = relationship(
         back_populates="user",
         cascade="all, delete-orphan",
     )

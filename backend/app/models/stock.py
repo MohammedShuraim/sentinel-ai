@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from app.models.news import News
     from app.models.portfolio import Portfolio
     from app.models.stock_follow import StockFollow
+    from app.models.transaction import Transaction
 
 
 class Stock(Base):
@@ -61,6 +62,11 @@ class Stock(Base):
     )
 
     portfolios: Mapped[list["Portfolio"]] = relationship(
+        back_populates="stock",
+        cascade="all, delete-orphan",
+    )
+
+    transactions: Mapped[list["Transaction"]] = relationship(
         back_populates="stock",
         cascade="all, delete-orphan",
     )

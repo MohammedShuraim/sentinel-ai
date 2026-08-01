@@ -8,6 +8,7 @@ from app.api.stocks import router as stocks_router
 from app.api.stock import router as stock_router
 from app.api.news import router as news_router
 from app.api.portfolio import router as portfolio_router
+from app.api.transaction import router as transaction_router
 
 app = FastAPI(
     title="Sentellent API",
@@ -22,6 +23,7 @@ app.include_router(stocks_router)
 app.include_router(stock_router)
 app.include_router(news_router)
 app.include_router(portfolio_router)
+app.include_router(transaction_router)
 
 
 @app.get("/")
