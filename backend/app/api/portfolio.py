@@ -8,8 +8,10 @@ from app.crud.portfolio import (
     get_user_portfolio,
     update_portfolio,
 )
+from app.crud.portfolio_summary import get_portfolio_summary
 from app.db.dependencies import get_db
 from app.schemas.portfolio import PortfolioCreate, PortfolioRead, PortfolioUpdate
+from app.schemas.portfolio_summary import PortfolioSummary
 
 router = APIRouter(
     prefix="/portfolio",
@@ -45,6 +47,13 @@ def list_portfolio(
     db: Session = Depends(get_db),
 ):
     return get_user_portfolio(db, USER_ID)
+
+
+@router.get("/summary", response_model=PortfolioSummary)
+def read_portfolio_summary(
+    db: Session = Depends(get_db),
+):
+    return get_portfolio_summary(db, USER_ID)
 
 
 @router.get("/{portfolio_id}", response_model=PortfolioRead)

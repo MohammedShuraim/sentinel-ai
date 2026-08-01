@@ -1,3 +1,4 @@
+from app.models.fundamental import Fundamental
 from app.models.news import News
 from app.models.portfolio import Portfolio
 from app.models.stock import Stock

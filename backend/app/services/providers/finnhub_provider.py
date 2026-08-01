@@ -38,3 +38,40 @@ class FinnhubProvider:
             response.raise_for_status()
 
             return response.json()
+
+    def fetch_fundamentals(self, ticker: str) -> dict:
+        """Fetch company fundamentals for a single stock from Finnhub.
+
+        Calls the Company Basic Financials endpoint and maps the latest
+        available metrics into a dictionary compatible with
+        ``FundamentalCreate``. Missing metrics are returned as ``None``.
+        Raises ``httpx.HTTPStatusError`` if Finnhub returns an error
+        status.
+        """
+        params = {
+            "symbol": ticker,
+            "metric": "all",
+            "token": self.api_key,
+        }
+
+        with httpx.Client() as client:
+            response = client.get(
+                f"{self.base_url}/stock/metric",
+                params=params,
+            )
+            response.raise_for_status()
+
+            payload = response.json()
+
+        metric = payload.get("metric") or {}
+
+        return {
+            "market_cap": metric.get("marketCapitalization"),
+            "pe_ratio": metric.get("peBasicExclExtraTTM"),
+            "eps": metric.get("epsBasicExclExtraItemsTTM"),
+            "roe": metric.get("roeTTM"),
+            "debt_to_equity": metric.get("totalDebt/totalEquityQuarterly"),
+            "book_value": metric.get("bookValuePerShareQuarterly"),
+            "dividend_yield": metric.get("dividendYieldIndicatedAnnual"),
+            "face_value": metric.get("faceValue"),
+        }
