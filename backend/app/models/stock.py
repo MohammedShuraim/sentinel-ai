@@ -6,6 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 
 if TYPE_CHECKING:
+    from app.models.news import News
     from app.models.stock_follow import StockFollow
 
 
@@ -49,6 +50,11 @@ class Stock(Base):
     )
 
     followers: Mapped[list["StockFollow"]] = relationship(
+        back_populates="stock",
+        cascade="all, delete-orphan",
+    )
+
+    news: Mapped[list["News"]] = relationship(
         back_populates="stock",
         cascade="all, delete-orphan",
     )
