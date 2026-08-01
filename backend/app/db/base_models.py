@@ -1,5 +1,6 @@
 from app.db.base import Base
 
+from app.models.embedding import Embedding
 from app.models.fundamental import Fundamental
 from app.models.news import News
 from app.models.portfolio import Portfolio

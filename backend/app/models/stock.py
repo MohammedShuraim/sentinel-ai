@@ -6,6 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 
 if TYPE_CHECKING:
+    from app.models.embedding import Embedding
     from app.models.fundamental import Fundamental
     from app.models.news import News
     from app.models.portfolio import Portfolio
@@ -76,4 +77,9 @@ class Stock(Base):
         back_populates="stock",
         cascade="all, delete-orphan",
         uselist=False,
+    )
+
+    embeddings: Mapped[list["Embedding"]] = relationship(
+        back_populates="stock",
+        cascade="all, delete-orphan",
     )
