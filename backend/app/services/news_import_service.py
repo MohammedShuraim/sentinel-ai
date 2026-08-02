@@ -4,25 +4,39 @@ from sqlalchemy.orm import Session
 
 from app.crud.news import create_news
 from app.crud.stock import get_all_stocks, get_stock_by_ticker
+from app.models.stock import Stock
 from app.schemas.news import NewsCreate
+from app.services.embedding_import_service import EmbeddingImportService
+from app.services.news_analysis_service import NewsAnalysisService
+from app.services.stock_sentiment_service import StockSentimentService
 
 
 class NewsImportService:
     """Imports stock market news articles into the database.
 
     Orchestrates the full import pipeline: fetching articles from an
-    external news provider, validating and normalizing them, and storing
-    the resulting records in the news table.
+    external news provider, validating and normalizing them, storing
+    the resulting records, analyzing each article, updating rolling
+    stock sentiment, and regenerating embeddings for affected stocks.
     """
 
-    def __init__(self, provider):
-        """Create the news import service for the given news provider.
+    def __init__(
+        self,
+        provider,
+        news_analysis_service: NewsAnalysisService,
+        stock_sentiment_service: StockSentimentService,
+        embedding_import_service: EmbeddingImportService,
+    ):
+        """Create the news import service for the given dependencies.
 
         Any object exposing a ``fetch_news()`` method returning raw
         article dictionaries is accepted, so providers can be swapped
         without changing the pipeline.
         """
         self.provider = provider
+        self.news_analysis_service = news_analysis_service
+        self.stock_sentiment_service = stock_sentiment_service
+        self.embedding_import_service = embedding_import_service
 
     def fetch_news(self, *args, **kwargs) -> list[dict]:
         """Fetch raw news articles from the configured news provider.
@@ -76,14 +90,17 @@ class NewsImportService:
         return valid_articles
 
     def store_articles(self, db: Session, articles: list[dict]) -> int:
-        """Store validated articles in the news table.
+        """Store validated articles, analyze them, and refresh embeddings.
 
         Resolves each article to a stock through its NSE entity, skips
         articles with no NSE entity or no matching stock, and delegates
         insertion (including duplicate-URL handling) to the news CRUD
-        layer. Returns the number of records inserted.
+        layer. After each successful insert, runs news analysis and
+        persists it. Regenerates embeddings for affected stocks once
+        storage completes. Returns the number of records inserted.
         """
         inserted = 0
+        stocks_to_embed: dict[int, Stock] = {}
 
         for article in articles:
             nse_entities = [
@@ -115,8 +132,23 @@ class NewsImportService:
                 ),
             )
 
-            if create_news(db, db_stock.id, news) is not None:
-                inserted += 1
+            db_news = create_news(db, db_stock.id, news)
+
+            if db_news is None:
+                continue
+
+            analysis = self.news_analysis_service.analyze(db_news)
+            db.add(analysis)
+            db.commit()
+            db.refresh(analysis)
+
+            self.stock_sentiment_service.update_stock_sentiment(db, analysis)
+
+            stocks_to_embed[db_stock.id] = db_stock
+            inserted += 1
+
+        for stock in stocks_to_embed.values():
+            self.embedding_import_service.import_stock(db, stock)
 
         return inserted
 

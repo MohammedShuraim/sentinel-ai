@@ -7,6 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 
 if TYPE_CHECKING:
+    from app.models.news_analysis import NewsAnalysis
     from app.models.stock import Stock
 
 
@@ -54,3 +55,9 @@ class News(Base):
     )
 
     stock: Mapped["Stock"] = relationship(back_populates="news")
+
+    analysis: Mapped["NewsAnalysis | None"] = relationship(
+        back_populates="news",
+        cascade="all, delete-orphan",
+        uselist=False,
+    )

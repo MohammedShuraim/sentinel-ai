@@ -1,9 +1,13 @@
+import logging
 from datetime import datetime, timedelta, timezone
 
 from jose import JWTError, jwt
+from jose.exceptions import ExpiredSignatureError
 from passlib.context import CryptContext
 
 from app.core.config import settings
+
+logger = logging.getLogger(__name__)
 
 pwd_context = CryptContext(
     schemes=["bcrypt"],
@@ -47,5 +51,10 @@ def decode_access_token(token: str):
         )
         return payload
 
+    except ExpiredSignatureError:
+        logger.warning("Access token expired")
+        return None
+
     except JWTError:
+        logger.warning("Invalid access token")
         return None

@@ -14,6 +14,12 @@ class Settings(BaseSettings):
     MARKETAUX_API_KEY: str = ""
     MARKETAUX_BASE_URL: str = "https://api.marketaux.com/v1"
 
+    GEMINI_API_KEY: str = ""
+
+    GOOGLE_CLIENT_ID: str
+    GOOGLE_CLIENT_SECRET: str
+    GOOGLE_REDIRECT_URI: str
+
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore",

@@ -17,6 +17,7 @@ class Fundamental(Base):
 
     stock_id: Mapped[int] = mapped_column(
         ForeignKey("stocks.id", ondelete="CASCADE"),
+        unique=True,
         nullable=False,
         index=True,
     )

@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
@@ -6,6 +8,8 @@ from app.core.security import decode_access_token
 from app.crud.user import get_user_by_email
 from app.db.dependencies import get_db
 
+logger = logging.getLogger(__name__)
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
@@ -13,10 +17,7 @@ def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db),
 ):
-    print("TOKEN RECEIVED:", token)
-
     payload = decode_access_token(token)
-    print("PAYLOAD:", payload)
 
     if payload is None:
         raise HTTPException(
@@ -25,11 +26,10 @@ def get_current_user(
         )
 
     email = payload.get("sub")
-    print("EMAIL:", email)
-
     user = get_user_by_email(db, email)
 
     if user is None:
+        logger.warning("Authenticated subject not found")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User not found",

@@ -3,6 +3,7 @@ import math
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.api.dependencies import get_current_user
 from app.crud.portfolio import (
     create_portfolio,
     delete_portfolio,
@@ -15,6 +16,7 @@ from app.crud.transaction import (
     get_user_transactions,
 )
 from app.db.dependencies import get_db
+from app.models.user import User
 from app.schemas.portfolio import PortfolioCreate, PortfolioUpdate
 from app.schemas.transaction import TransactionCreate, TransactionRead
 
@@ -22,9 +24,6 @@ router = APIRouter(
     prefix="/transactions",
     tags=["Transactions"],
 )
-
-# TODO: replace with the authenticated user once auth is integrated.
-USER_ID = 1
 
 
 @router.post(
@@ -35,6 +34,7 @@ USER_ID = 1
 def buy_stock(
     transaction: TransactionCreate,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     if transaction.transaction_type != "BUY":
         raise HTTPException(
@@ -42,14 +42,18 @@ def buy_stock(
             detail="transaction_type must be BUY",
         )
 
-    db_transaction = create_transaction(db, USER_ID, transaction)
+    db_transaction = create_transaction(db, current_user.id, transaction)
 
-    db_portfolio = get_portfolio_by_stock(db, USER_ID, transaction.stock_id)
+    db_portfolio = get_portfolio_by_stock(
+        db,
+        current_user.id,
+        transaction.stock_id,
+    )
 
     if db_portfolio is None:
         create_portfolio(
             db,
-            USER_ID,
+            current_user.id,
             PortfolioCreate(
                 stock_id=transaction.stock_id,
                 quantity=transaction.quantity,
@@ -83,6 +87,7 @@ def buy_stock(
 def sell_stock(
     transaction: TransactionCreate,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     if transaction.transaction_type != "SELL":
         raise HTTPException(
@@ -90,7 +95,11 @@ def sell_stock(
             detail="transaction_type must be SELL",
         )
 
-    db_portfolio = get_portfolio_by_stock(db, USER_ID, transaction.stock_id)
+    db_portfolio = get_portfolio_by_stock(
+        db,
+        current_user.id,
+        transaction.stock_id,
+    )
 
     if db_portfolio is None:
         raise HTTPException(
@@ -104,7 +113,7 @@ def sell_stock(
             detail="Insufficient shares",
         )
 
-    db_transaction = create_transaction(db, USER_ID, transaction)
+    db_transaction = create_transaction(db, current_user.id, transaction)
 
     new_quantity = db_portfolio.quantity - transaction.quantity
 
@@ -123,13 +132,15 @@ def sell_stock(
 @router.get("/", response_model=list[TransactionRead])
 def list_transactions(
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
-    return get_user_transactions(db, USER_ID)
+    return get_user_transactions(db, current_user.id)
 
 
 @router.get("/stock/{stock_id}", response_model=list[TransactionRead])
 def list_stock_transactions(
     stock_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
-    return get_stock_transactions(db, USER_ID, stock_id)
+    return get_stock_transactions(db, current_user.id, stock_id)

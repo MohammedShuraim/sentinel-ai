@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from app.models.embedding import Embedding
@@ -33,3 +33,10 @@ def get_embeddings_for_stock(db: Session, stock_id: int) -> list[Embedding]:
     )
 
     return list(db.scalars(stmt).all())
+
+
+def delete_embeddings_for_stock(db: Session, stock_id: int) -> None:
+    stmt = delete(Embedding).where(Embedding.stock_id == stock_id)
+
+    db.execute(stmt)
+    db.commit()
