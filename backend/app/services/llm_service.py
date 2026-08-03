@@ -1,3 +1,5 @@
+from collections.abc import Iterator
+
 from app.services.providers.llm_provider import LLMProvider
 
 
@@ -19,3 +21,7 @@ class LLMService:
         Returns the provider output unchanged.
         """
         return self.provider.generate(prompt)
+
+    def stream(self, prompt: str) -> Iterator[str]:
+        """Stream text deltas by delegating to the configured provider."""
+        return self.provider.stream(prompt)

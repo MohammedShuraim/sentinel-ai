@@ -1,3 +1,6 @@
+from collections.abc import Iterator
+
+
 class LLMProvider:
     """Abstract provider interface for large language models.
 
@@ -19,5 +22,13 @@ class LLMProvider:
         """Generate a text response for the given prompt.
 
         Returns the model output as a string.
+        """
+        raise NotImplementedError
+
+    def stream(self, prompt: str) -> Iterator[str]:
+        """Yield text deltas for the given prompt as they are produced.
+
+        Implementations must raise provider/SDK exceptions unchanged so
+        higher layers can apply retry and failover before the first token.
         """
         raise NotImplementedError

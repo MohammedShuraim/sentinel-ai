@@ -15,6 +15,12 @@ class Settings(BaseSettings):
     MARKETAUX_BASE_URL: str = "https://api.marketaux.com/v1"
 
     GEMINI_API_KEY: str = ""
+    GOOGLE_API_KEY: str = ""
+
+    GROQ_API_KEY: str = ""
+    GROQ_MODEL: str = "llama-3.3-70b-versatile"
+    PRIMARY_PROVIDER: str = "gemini"
+    FALLBACK_PROVIDER: str = "groq"
 
     GOOGLE_CLIENT_ID: str
     GOOGLE_CLIENT_SECRET: str

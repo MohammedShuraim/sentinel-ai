@@ -5,6 +5,7 @@ from google.genai import errors as genai_errors
 from app.models.investor_profile import InvestorProfile
 from app.models.stock import Stock
 from app.services.llm_service import LLMService
+from app.services.providers.failover_provider import ProviderUnavailableError
 from app.services.recommendation_service import RecommendationService
 
 logger = logging.getLogger(__name__)
@@ -60,9 +61,9 @@ class RecommendationExplanationService:
 
         try:
             return self.llm_service.generate(prompt)
-        except genai_errors.APIError as exc:
+        except (ProviderUnavailableError, genai_errors.APIError) as exc:
             logger.warning(
-                "Gemini explanation failed; using deterministic fallback: %s",
+                "AI explanation failed; using deterministic fallback: %s",
                 exc,
             )
             return self._fallback_explanation(investor_profile, stock)

@@ -24,6 +24,12 @@ class AgentState(TypedDict):
     db: Session
     """Request-scoped SQLAlchemy session for retrieval and ticker lookup."""
 
+    intent: str
+    """Routing intent produced by IntentRouter (e.g. GENERAL_CHAT)."""
+
+    use_rag: bool
+    """Whether this turn should run vector retrieval."""
+
     context: str
     """The retrieved RAG context."""
 

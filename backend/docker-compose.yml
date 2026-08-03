@@ -7,8 +7,9 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    ports:
-      - "5432:5432"
+    # No host port publish — backend reaches postgres via the Docker network
+    # service name. Avoids clashing with a local Postgres on the host and
+    # keeps the DB off the public interface in production-like runs.
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -35,6 +36,33 @@ services:
       - "8000:8000"
     depends_on:
       postgres:
+        condition: service_healthy
+    networks:
+      - sentellent
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8000/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      # First boot downloads embedding weights into HF_HOME (~1–2 min cold)
+      start_period: 180s
+
+  # Optional: build/run with `docker compose --profile web up`
+  frontend:
+    profiles: ["web"]
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+      args:
+        # Browser talks to the backend via the host-mapped port
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
+    container_name: sentellent-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
         condition: service_healthy
     networks:
       - sentellent

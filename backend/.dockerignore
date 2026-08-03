@@ -17,6 +17,9 @@ htmlcov
 .env.*
 *.md
 tmp*
+_docker_validate*
+_crash*
+*.log
 *.pyc
 .DS_Store
 Thumbs.db

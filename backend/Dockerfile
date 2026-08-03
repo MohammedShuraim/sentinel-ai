@@ -1,17 +1,25 @@
-FROM python:3.13-slim
+# syntax=docker/dockerfile:1
+
+# ---------------------------------------------------------------------------
+# Build stage — compile native deps and install Python packages into a venv
+# ---------------------------------------------------------------------------
+FROM python:3.13-slim AS builder
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
-
-WORKDIR /app
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    VIRTUAL_ENV=/opt/venv \
+    PATH="/opt/venv/bin:$PATH"
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         build-essential \
         curl \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && python -m venv "$VIRTUAL_ENV"
+
+WORKDIR /build
 
 COPY requirements.txt .
 # Install CPU-only torch/torchvision first (official PyTorch CPU index).
@@ -24,12 +32,37 @@ RUN pip install --upgrade pip \
     && pip install -r /tmp/requirements.docker.txt \
     && rm /tmp/requirements.docker.txt
 
-COPY . .
+# ---------------------------------------------------------------------------
+# Runtime stage — slim image, non-root, no compilers
+# ---------------------------------------------------------------------------
+FROM python:3.13-slim AS runtime
 
-RUN useradd --create-home --shell /bin/bash appuser \
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    VIRTUAL_ENV=/opt/venv \
+    PATH="/opt/venv/bin:$PATH" \
+    HF_HOME=/app/.cache/huggingface
+
+WORKDIR /app
+
+# curl is required by the compose healthcheck
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd --create-home --shell /bin/bash appuser \
+    && mkdir -p /app/.cache/huggingface \
     && chown -R appuser:appuser /app
+
+COPY --from=builder /opt/venv /opt/venv
+COPY --chown=appuser:appuser . .
+
+# Normalize CRLF → LF so the shebang works when built from Windows checkouts
+RUN sed -i 's/\r$//' /app/docker-entrypoint.sh \
+    && chmod +x /app/docker-entrypoint.sh
+
 USER appuser
 
 EXPOSE 8000
 
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

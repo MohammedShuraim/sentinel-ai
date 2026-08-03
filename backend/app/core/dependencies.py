@@ -23,7 +23,7 @@ from app.services.preference_extraction_service import (
     PreferenceExtractionService,
 )
 from app.services.preference_parser_service import PreferenceParserService
-from app.services.providers.gemini_provider import GeminiProvider
+from app.services.providers.provider_factory import create_llm_provider
 from app.services.providers.sentence_transformer_provider import (
     SentenceTransformerProvider,
 )
@@ -34,7 +34,7 @@ embedding_provider = SentenceTransformerProvider()
 retriever_service = RetrieverService(embedding_provider)
 rag_service = RAGService(retriever_service)
 
-llm_provider = GeminiProvider(api_key=settings.GEMINI_API_KEY)
+llm_provider = create_llm_provider()
 llm_service = LLMService(llm_provider)
 
 agent_graph = AgentGraph(

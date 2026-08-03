@@ -1,5 +1,7 @@
 import logging
 import time
+from collections.abc import Iterator
+from typing import Any
 
 from google.genai import errors as genai_errors
 from sqlalchemy.orm import Session
@@ -7,6 +9,7 @@ from sqlalchemy.orm import Session
 from app.crud.conversation import create_conversation, get_user_conversation
 from app.crud.message import create_message, get_recent_messages
 from app.graph.agent_graph import AgentGraph
+from app.models.conversation import Conversation
 from app.schemas.retrieved_document import RetrievedDocument
 from app.services.conversation_formatter_service import (
     ConversationFormatterService,
@@ -19,6 +22,7 @@ from app.services.preference_extraction_service import (
     PreferenceExtractionService,
 )
 from app.services.preference_parser_service import PreferenceParserService
+from app.services.providers.failover_provider import ProviderUnavailableError
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +66,111 @@ class ConversationService:
         """Persist a chat turn and return conversation id, answer, and sources."""
         total_started = time.perf_counter()
 
+        conversation, history, profile_text = self._prepare_turn(
+            db=db,
+            user_id=user_id,
+            question=question,
+            conversation_id=conversation_id,
+        )
+
+        answer, sources = self.agent_graph.run(
+            db=db,
+            question=question,
+            history=history,
+            profile=profile_text,
+        )
+
+        create_message(
+            db,
+            conversation.id,
+            role="assistant",
+            content=answer,
+        )
+
+        total_ms = (time.perf_counter() - total_started) * 1000
+        logger.info("Total: %.0f ms", total_ms)
+
+        return (
+            conversation.id,
+            answer,
+            sources,
+        )
+
+    def chat_stream(
+        self,
+        db: Session,
+        user_id: int,
+        question: str,
+        conversation_id: int | None = None,
+    ) -> Iterator[dict[str, Any]]:
+        """Stream a chat turn as SSE event payloads.
+
+        Yields:
+        - ``start`` with ``conversation_id`` after the user message is stored
+        - ``token`` deltas while the model streams
+        - ``done`` with the full answer and sources after persistence
+        - ``error`` when the turn cannot continue
+        """
+        total_started = time.perf_counter()
+
+        conversation, history, profile_text = self._prepare_turn(
+            db=db,
+            user_id=user_id,
+            question=question,
+            conversation_id=conversation_id,
+        )
+
+        yield {
+            "type": "start",
+            "conversation_id": conversation.id,
+        }
+
+        token_iter, sources = self.agent_graph.stream(
+            db=db,
+            question=question,
+            history=history,
+            profile=profile_text,
+        )
+
+        chunks: list[str] = []
+        try:
+            for token in token_iter:
+                chunks.append(token)
+                yield {"type": "token", "delta": token}
+        except Exception as exc:
+            logger.exception("Chat stream failed: %s", exc)
+            yield {
+                "type": "error",
+                "detail": "The AI service is temporarily unavailable.",
+            }
+            return
+
+        answer = "".join(chunks)
+        create_message(
+            db,
+            conversation.id,
+            role="assistant",
+            content=answer,
+        )
+
+        total_ms = (time.perf_counter() - total_started) * 1000
+        logger.info("Total stream: %.0f ms", total_ms)
+
+        yield {
+            "type": "done",
+            "conversation_id": conversation.id,
+            "answer": answer,
+            "sources": [source.model_dump() for source in sources],
+        }
+
+    def _prepare_turn(
+        self,
+        db: Session,
+        user_id: int,
+        question: str,
+        conversation_id: int | None,
+    ) -> tuple[Conversation, str, str]:
+        """Create/load conversation, store user message, return history/profile."""
         if conversation_id is None:
             conversation = create_conversation(db, user_id)
         else:
@@ -86,7 +195,6 @@ class ConversationService:
 
         profile = self.investor_profile_service.get_or_create(db, user_id)
 
-        preference_ms = 0.0
         if self.preference_extraction_service.should_extract(question):
             preference_started = time.perf_counter()
             try:
@@ -95,9 +203,9 @@ class ConversationService:
                         history,
                     )
                 )
-            except genai_errors.APIError as exc:
+            except (ProviderUnavailableError, genai_errors.APIError) as exc:
                 logger.warning(
-                    "Gemini preference extraction failed; continuing without "
+                    "AI preference extraction failed; continuing without "
                     "preference update: %s",
                     exc,
                 )
@@ -125,26 +233,4 @@ class ConversationService:
             logger.info("Preference extraction: 0 ms (skipped)")
 
         profile_text = self.profile_formatter.format_profile(profile)
-
-        answer, sources = self.agent_graph.run(
-            db=db,
-            question=question,
-            history=history,
-            profile=profile_text,
-        )
-
-        create_message(
-            db,
-            conversation.id,
-            role="assistant",
-            content=answer,
-        )
-
-        total_ms = (time.perf_counter() - total_started) * 1000
-        logger.info("Total: %.0f ms", total_ms)
-
-        return (
-            conversation.id,
-            answer,
-            sources,
-        )
+        return conversation, history, profile_text

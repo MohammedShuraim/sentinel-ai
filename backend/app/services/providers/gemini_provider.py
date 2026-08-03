@@ -1,3 +1,5 @@
+from collections.abc import Iterator
+
 from google import genai
 
 from app.services.providers.llm_provider import LLMProvider
@@ -37,3 +39,16 @@ class GeminiProvider(LLMProvider):
         )
 
         return response.text
+
+    def stream(self, prompt: str) -> Iterator[str]:
+        """Yield Gemini text deltas via ``generate_content_stream``."""
+        for chunk in self.client.models.generate_content_stream(
+            model=self.model,
+            contents=prompt,
+        ):
+            try:
+                text = chunk.text
+            except (ValueError, AttributeError):
+                text = None
+            if text:
+                yield text

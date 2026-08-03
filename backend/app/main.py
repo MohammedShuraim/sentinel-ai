@@ -1,6 +1,10 @@
+import logging
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
+
+logger = logging.getLogger("sentellent")
 
 from app.core.config import settings
 from app.api.users import router as user_router
@@ -73,8 +77,10 @@ def db_test():
             "message": "✅ Database connected successfully!"
         }
 
-    except Exception as e:
+    except Exception:
+        # Never leak connection strings or driver details to clients.
+        logger.exception("Database connectivity check failed")
         return {
             "status": "error",
-            "message": str(e)
+            "message": "Database connection failed",
         }
