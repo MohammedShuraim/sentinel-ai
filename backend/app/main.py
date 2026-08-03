@@ -47,6 +47,11 @@ def root():
     }
 
 
+@app.get("/health")
+def health():
+    return {"status": "healthy"}
+
+
 @app.get("/db-test")
 def db_test():
     try:
