@@ -20,10 +20,21 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_SECRET: str
     GOOGLE_REDIRECT_URI: str
 
+    CORS_ORIGINS: str = "http://localhost:3000,http://127.0.0.1:3000"
+    FRONTEND_URL: str = "http://localhost:3000"
+
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore",
     )
+
+    @property
+    def cors_origin_list(self) -> list[str]:
+        return [
+            origin.strip()
+            for origin in self.CORS_ORIGINS.split(",")
+            if origin.strip()
+        ]
 
 
 settings = Settings()
