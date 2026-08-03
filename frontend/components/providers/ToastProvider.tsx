@@ -34,6 +34,12 @@ export function useToast(): ToastContextValue {
   return context;
 }
 
+const toastStyles: Record<ToastVariant, string> = {
+  success: "border-profit/30 bg-elevated text-profit",
+  error: "border-loss/30 bg-elevated text-loss",
+  info: "border-line bg-elevated text-fg",
+};
+
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
@@ -58,13 +64,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           <div
             key={toast.id}
             className={cn(
-              "pointer-events-auto rounded-lg border px-4 py-3 text-sm shadow-lg backdrop-blur",
-              toast.variant === "success" &&
-                "border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/90 dark:text-emerald-100",
-              toast.variant === "error" &&
-                "border-rose-200 bg-rose-50 text-rose-900 dark:border-rose-900/60 dark:bg-rose-950/90 dark:text-rose-100",
-              toast.variant === "info" &&
-                "border-zinc-200 bg-white text-zinc-900 dark:border-zinc-800 dark:bg-zinc-950/95 dark:text-zinc-100",
+              "pointer-events-auto animate-scale-in rounded-xl border px-4 py-3 text-sm shadow-pop backdrop-blur",
+              toastStyles[toast.variant],
             )}
             role="status"
           >

@@ -21,6 +21,7 @@ from app.api.embedding import router as embedding_router
 from app.api.embedding_bulk import router as embedding_bulk_router
 from app.api.chat import router as chat_router
 from app.api.recommendation import router as recommendation_router
+from app.api.investor_profile import router as investor_profile_router
 
 
 app = FastAPI(
@@ -51,6 +52,7 @@ app.include_router(embedding_router)
 app.include_router(embedding_bulk_router)
 app.include_router(chat_router)
 app.include_router(recommendation_router)
+app.include_router(investor_profile_router)
 
 
 @app.get("/")

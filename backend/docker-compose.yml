@@ -54,7 +54,9 @@ services:
       context: ../frontend
       dockerfile: Dockerfile
       args:
-        # Browser talks to the backend via the host-mapped port
+        # Browser (not the container) calls the backend via the host-mapped port.
+        # Do NOT use the Docker service name here — NEXT_PUBLIC_* is inlined into
+        # client JS and must be reachable from the user's browser.
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
         NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
     container_name: sentellent-frontend
@@ -66,6 +68,18 @@ services:
         condition: service_healthy
     networks:
       - sentellent
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
 networks:
   sentellent:

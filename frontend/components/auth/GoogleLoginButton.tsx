@@ -11,7 +11,7 @@ export function GoogleLoginButton({ className }: { className?: string }) {
       type="button"
       onClick={loginWithGoogle}
       className={cn(
-        "flex w-full items-center justify-center gap-3 rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800",
+        "flex h-11 w-full items-center justify-center gap-3 rounded-xl border border-line bg-elevated px-4 text-sm font-medium text-fg transition-colors hover:border-line-strong hover:bg-overlay focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40",
         className,
       )}
     >

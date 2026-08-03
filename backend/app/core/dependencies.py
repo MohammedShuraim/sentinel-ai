@@ -72,3 +72,8 @@ def get_agent_graph() -> AgentGraph:
 def get_conversation_service() -> ConversationService:
     """Return the singleton ConversationService instance."""
     return conversation_service
+
+
+def get_investor_profile_service() -> InvestorProfileService:
+    """Return the singleton InvestorProfileService instance."""
+    return investor_profile_service

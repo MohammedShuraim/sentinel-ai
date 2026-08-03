@@ -105,7 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setToken(token.access_token);
       const profile = await getCurrentUser();
       setUser(profile);
-      router.replace("/");
+      router.replace("/dashboard");
     },
     [router],
   );
@@ -119,7 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setToken(accessToken);
       const profile = await getCurrentUser();
       setUser(profile);
-      router.replace("/");
+      router.replace("/dashboard");
     },
     [router],
   );

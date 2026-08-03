@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
+import { motion, useReducedMotion } from "framer-motion";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useToast } from "@/components/providers/ToastProvider";
 import { getApiErrorMessage } from "@/lib/api/client";
@@ -10,6 +11,8 @@ import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { GoogleLoginButton } from "@/components/auth/GoogleLoginButton";
+import { Logo } from "@/components/brand/Logo";
+import { fadeIn, fadeUp, staggerContainer } from "@/lib/motion/presets";
 
 export default function RegisterPage() {
   const { register, login } = useAuth();
@@ -18,6 +21,8 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const reduceMotion = useReducedMotion();
+  const item = reduceMotion ? fadeIn : fadeUp;
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
@@ -38,26 +43,38 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="text-center">
-        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-          Create your account
-        </h1>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-          Join Sentellent in seconds
-        </p>
-      </div>
+    <motion.div
+      className="flex flex-col gap-6"
+      variants={staggerContainer}
+      initial="hidden"
+      animate="show"
+    >
+      <motion.div
+        variants={item}
+        className="flex flex-col items-center gap-4 text-center"
+      >
+        <Logo size="lg" withWordmark={false} />
+        <div>
+          <h1 className="font-display text-2xl font-semibold tracking-tight text-fg">
+            Create your account
+          </h1>
+          <p className="mt-1 text-sm text-fg-muted">
+            Join Sentellent in seconds
+          </p>
+        </div>
+      </motion.div>
 
-      <Card className="p-6 sm:p-8">
+      <motion.div variants={item}>
+        <Card className="p-6 sm:p-8">
         <div className="flex flex-col gap-4">
           <GoogleLoginButton />
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-zinc-200 dark:border-zinc-800" />
+              <span className="w-full border-t border-line" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-2 text-zinc-500 dark:bg-zinc-950 dark:text-zinc-400">
+              <span className="bg-surface px-2 tracking-wider text-fg-subtle">
                 or use email
               </span>
             </div>
@@ -103,22 +120,23 @@ export default function RegisterPage() {
                 placeholder="At least 8 characters"
               />
             </div>
-            <Button type="submit" loading={submitting}>
+            <Button type="submit" loading={submitting} className="w-full">
               Create account
             </Button>
           </form>
         </div>
-      </Card>
+        </Card>
+      </motion.div>
 
-      <p className="text-center text-sm text-zinc-600 dark:text-zinc-400">
+      <motion.p variants={item} className="text-center text-sm text-fg-muted">
         Already have an account?{" "}
         <Link
           href="/login"
-          className="font-medium text-zinc-900 underline-offset-4 hover:underline dark:text-zinc-100"
+          className="font-medium text-brand underline-offset-4 hover:underline"
         >
           Sign in
         </Link>
-      </p>
-    </div>
+      </motion.p>
+    </motion.div>
   );
 }

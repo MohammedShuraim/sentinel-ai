@@ -1,6 +1,7 @@
 "use client";
 
 import { Component, type ReactNode } from "react";
+import { Button } from "@/components/ui/Button";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -27,19 +28,15 @@ export class ErrorBoundary extends Component<
     if (this.state.hasError) {
       return (
         <div className="flex min-h-[40vh] flex-col items-center justify-center gap-4 p-6 text-center">
-          <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+          <h2 className="font-display text-lg font-semibold text-fg">
             Something went wrong
           </h2>
-          <p className="max-w-sm text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="max-w-sm text-sm text-fg-muted">
             The application hit an unexpected error. You can try again.
           </p>
-          <button
-            type="button"
-            onClick={() => this.setState({ hasError: false })}
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
-          >
+          <Button onClick={() => this.setState({ hasError: false })}>
             Try again
-          </button>
+          </Button>
         </div>
       );
     }
