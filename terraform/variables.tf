@@ -59,6 +59,28 @@ variable "ssh_ingress_cidr" {
   }
 }
 
+variable "private_subnet_cidrs" {
+  description = "CIDR blocks for private subnets (must be two, in different AZs for RDS)."
+  type        = list(string)
+  default     = ["10.0.10.0/24", "10.0.11.0/24"]
+
+  validation {
+    condition     = length(var.private_subnet_cidrs) == 2
+    error_message = "private_subnet_cidrs must contain exactly two CIDR blocks."
+  }
+}
+
+variable "private_subnet_azs" {
+  description = "Availability zones for the private subnets (paired with private_subnet_cidrs)."
+  type        = list(string)
+  default     = ["ap-south-1a", "ap-south-1b"]
+
+  validation {
+    condition     = length(var.private_subnet_azs) == 2 && var.private_subnet_azs[0] != var.private_subnet_azs[1]
+    error_message = "private_subnet_azs must contain exactly two different Availability Zones."
+  }
+}
+
 variable "instance_type" {
   description = "EC2 instance type for the Sentellent application host."
   type        = string
@@ -77,13 +99,12 @@ variable "key_pair_name" {
 }
 
 # ---------------------------------------------------------------------------
-# Database settings (non-secret). Passwords and connection secrets belong in
-# environment variables, AWS Secrets Manager, or a gitignored tfvars file —
-# never commit real credentials.
+# Database — identifiers via variables; password via TF_VAR_db_password or
+# auto-generated (never hardcode secrets in .tf / committed tfvars).
 # ---------------------------------------------------------------------------
 
 variable "db_name" {
-  description = "Application database name."
+  description = "Initial PostgreSQL database name."
   type        = string
   default     = "sentellent"
 }
@@ -94,20 +115,35 @@ variable "db_username" {
   default     = "sentellent_admin"
 }
 
-variable "db_engine_version" {
-  description = "Preferred PostgreSQL major/minor version for future RDS."
+variable "db_password" {
+  description = "Master database password. Set with TF_VAR_db_password or leave null to auto-generate (stored in state only)."
   type        = string
-  default     = "16.4"
+  sensitive   = true
+  default     = null
+
+  validation {
+    condition = (
+      var.db_password == null ||
+      (length(var.db_password) >= 8 && length(var.db_password) <= 128)
+    )
+    error_message = "db_password must be null (auto-generate) or 8–128 characters."
+  }
+}
+
+variable "db_engine_version" {
+  description = "PostgreSQL engine version (major or major.minor)."
+  type        = string
+  default     = "16"
 }
 
 variable "db_instance_class" {
-  description = "Preferred RDS instance class for future database resources."
+  description = "RDS instance class."
   type        = string
   default     = "db.t4g.micro"
 }
 
 variable "db_allocated_storage" {
-  description = "Allocated storage in GiB for future RDS."
+  description = "Allocated storage in GiB."
   type        = number
   default     = 20
 
@@ -115,6 +151,53 @@ variable "db_allocated_storage" {
     condition     = var.db_allocated_storage >= 20
     error_message = "db_allocated_storage must be at least 20 GiB."
   }
+}
+
+variable "db_max_allocated_storage" {
+  description = "Upper limit for storage autoscaling in GiB (0 disables)."
+  type        = number
+  default     = 100
+}
+
+variable "db_backup_retention_period" {
+  description = "Automated backup retention in days (1–35). Must be > 0."
+  type        = number
+  default     = 7
+
+  validation {
+    condition     = var.db_backup_retention_period >= 1 && var.db_backup_retention_period <= 35
+    error_message = "db_backup_retention_period must be between 1 and 35 days."
+  }
+}
+
+variable "db_backup_window" {
+  description = "Preferred daily backup window (UTC)."
+  type        = string
+  default     = "03:00-04:00"
+}
+
+variable "db_maintenance_window" {
+  description = "Preferred weekly maintenance window (UTC)."
+  type        = string
+  default     = "sun:04:00-sun:05:00"
+}
+
+variable "db_multi_az" {
+  description = "Enable Multi-AZ. Default false for academic cost; set true for higher availability."
+  type        = bool
+  default     = false
+}
+
+variable "db_deletion_protection" {
+  description = "Prevent accidental RDS deletion."
+  type        = bool
+  default     = false
+}
+
+variable "db_skip_final_snapshot" {
+  description = "Skip final snapshot on destroy (convenient for academic/dev)."
+  type        = bool
+  default     = true
 }
 
 variable "tags" {

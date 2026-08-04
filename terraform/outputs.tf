@@ -72,8 +72,32 @@ output "iam_role_name" {
   value       = aws_iam_role.ec2.name
 }
 
-# Placeholder: RDS endpoint once the database is provisioned.
-# output "db_endpoint" {
-#   description = "RDS PostgreSQL endpoint hostname."
-#   value       = aws_db_instance.main.address
-# }
+output "rds_endpoint" {
+  description = "RDS PostgreSQL endpoint hostname."
+  value       = aws_db_instance.main.address
+}
+
+output "rds_port" {
+  description = "RDS PostgreSQL port."
+  value       = aws_db_instance.main.port
+}
+
+output "rds_identifier" {
+  description = "RDS DB instance identifier."
+  value       = aws_db_instance.main.identifier
+}
+
+output "db_subnet_group_name" {
+  description = "Name of the DB subnet group."
+  value       = aws_db_subnet_group.main.name
+}
+
+output "rds_security_group_id" {
+  description = "ID of the RDS security group."
+  value       = aws_security_group.rds.id
+}
+
+output "private_subnet_ids" {
+  description = "IDs of the private subnets used by RDS."
+  value       = aws_subnet.private[*].id
+}
