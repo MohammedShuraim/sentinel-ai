@@ -153,29 +153,25 @@ jobs:
       # Deploy the immutable github.sha tag from this run (not :latest).
       # :latest is still pushed for manual convenience; production always pins the SHA.
       #
-      # IMPORTANT: Do NOT pass ECR registry via job outputs. AWS account IDs are
-      # masked (secrets.AWS_ACCOUNT_ID / configure-aws-credentials), and GitHub
-      # redacts job outputs that contain masked values → empty string on EC2.
-      # Reconstruct registry/images here from workflow env + github.sha instead.
+      # Inject deploy env via the remote script body (not appleboy `env`/`envs`).
+      # Values are interpolated by GitHub Actions on the runner before SSH.
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.2.0
-        env:
-          ECR_REGISTRY: ${{ env.ECR_REGISTRY }}
-          ECR_PASSWORD: ${{ steps.ecr-pass.outputs.password }}
-          APP_DIR: ${{ env.EC2_APP_DIR }}
-          IMAGE_TAG: ${{ env.IMAGE_TAG }}
-          BACKEND_IMAGE: ${{ env.ECR_REGISTRY }}/${{ env.BACKEND_REPO }}:${{ env.IMAGE_TAG }}
-          FRONTEND_IMAGE: ${{ env.ECR_REGISTRY }}/${{ env.FRONTEND_REPO }}:${{ env.IMAGE_TAG }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script_stop: true
           command_timeout: 15m
-          envs: ECR_REGISTRY,ECR_PASSWORD,APP_DIR,IMAGE_TAG,BACKEND_IMAGE,FRONTEND_IMAGE
           script: |
             set -euo pipefail
-            echo "Remote env check: ECR_REGISTRY=${ECR_REGISTRY:?missing} IMAGE_TAG=${IMAGE_TAG:?missing}"
+            export ECR_REGISTRY="${{ env.ECR_REGISTRY }}"
+            export ECR_PASSWORD="${{ steps.ecr-pass.outputs.password }}"
+            export APP_DIR="${{ env.EC2_APP_DIR }}"
+            export IMAGE_TAG="${{ env.IMAGE_TAG }}"
+            export BACKEND_IMAGE="${{ env.ECR_REGISTRY }}/${{ env.BACKEND_REPO }}:${{ env.IMAGE_TAG }}"
+            export FRONTEND_IMAGE="${{ env.ECR_REGISTRY }}/${{ env.FRONTEND_REPO }}:${{ env.IMAGE_TAG }}"
+            echo "Remote env check: ECR_REGISTRY=${ECR_REGISTRY} IMAGE_TAG=${IMAGE_TAG}"
             chmod +x /tmp/sentellent-deploy/deploy-ec2.sh
             /tmp/sentellent-deploy/deploy-ec2.sh
             rm -f /tmp/sentellent-deploy/deploy-ec2.sh
