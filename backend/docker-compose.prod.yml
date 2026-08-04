@@ -1,19 +1,22 @@
 # =============================================================================
-# Sentellent — production Compose (EC2 + Amazon RDS)
+# Sentellent — production Compose (EC2 + Amazon RDS + ECR)
 #
 # Runs ONLY backend + frontend. Does NOT start a PostgreSQL container.
-# DATABASE_URL must point at Amazon RDS and comes from the environment / .env
-# without override.
+# Images are pulled from Amazon ECR (built by GitHub Actions — not on EC2).
+# DATABASE_URL must point at Amazon RDS and comes from .env without override.
 #
-# Usage (on EC2, from backend/):
-#   docker compose -f docker-compose.prod.yml --env-file .env up -d --build
+# Usage (CI sets BACKEND_IMAGE / FRONTEND_IMAGE to the commit SHA tag):
+#   export BACKEND_IMAGE=.../sentellent-backend:<git-sha>
+#   export FRONTEND_IMAGE=.../sentellent-frontend:<git-sha>
+#   docker compose -f docker-compose.prod.yml pull
+#   docker compose -f docker-compose.prod.yml up -d
+#
+# Manual convenience (mutable): omit env vars to use :latest defaults below.
 # =============================================================================
 
 services:
   backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${BACKEND_IMAGE:-549596002797.dkr.ecr.ap-south-1.amazonaws.com/sentellent-backend:latest}
     container_name: sentellent-backend
     restart: unless-stopped
     env_file:
@@ -32,14 +35,7 @@ services:
       start_period: 180s
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
-      args:
-        # Inlined into the browser bundle at build time — use the public EC2 /
-        # Elastic IP (or domain) URLs, not Docker service names.
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:?Set NEXT_PUBLIC_API_URL to the public backend URL}
-        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?Set NEXT_PUBLIC_SITE_URL to the public site URL}
+    image: ${FRONTEND_IMAGE:-549596002797.dkr.ecr.ap-south-1.amazonaws.com/sentellent-frontend:latest}
     container_name: sentellent-frontend
     restart: unless-stopped
     ports:
