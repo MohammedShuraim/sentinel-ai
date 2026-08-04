@@ -25,6 +25,22 @@ _docker_validate*
 .vscode/
 .idea/
 
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+terraform.tfvars
+*.auto.tfvars
+
 # OS
 .DS_Store
 Thumbs.db
