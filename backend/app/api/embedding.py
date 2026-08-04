@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.api.admin_gate import require_data_imports_enabled
 from app.db.dependencies import get_db
 from app.models.stock import Stock
 from app.schemas.embedding import EmbeddingRead
@@ -29,6 +30,7 @@ router = APIRouter(
 def import_embeddings(
     stock_id: int,
     db: Session = Depends(get_db),
+    _: None = Depends(require_data_imports_enabled),
 ):
     stock = db.get(Stock, stock_id)
 

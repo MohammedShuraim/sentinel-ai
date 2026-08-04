@@ -6,8 +6,13 @@ from typing import Any
 from google.genai import errors as genai_errors
 from sqlalchemy.orm import Session
 
-from app.crud.conversation import create_conversation, get_user_conversation
-from app.crud.message import create_message, get_recent_messages
+from app.crud.conversation import (
+    create_conversation,
+    get_latest_user_conversation,
+    get_user_conversation,
+)
+from app.crud.message import create_message, get_messages, get_recent_messages
+from app.schemas.chat import ActiveConversationResponse, ChatMessageRead
 from app.graph.agent_graph import AgentGraph
 from app.models.conversation import Conversation
 from app.schemas.retrieved_document import RetrievedDocument
@@ -163,6 +168,27 @@ class ConversationService:
             "sources": [source.model_dump() for source in sources],
         }
 
+    def get_active_conversation(
+        self,
+        db: Session,
+        user_id: int,
+    ) -> ActiveConversationResponse:
+        """Return the user's most recent conversation and full message history."""
+        conversation = get_latest_user_conversation(db, user_id)
+        if conversation is None:
+            return ActiveConversationResponse(
+                conversation_id=None,
+                messages=[],
+            )
+
+        messages = get_messages(db, conversation.id)
+        return ActiveConversationResponse(
+            conversation_id=conversation.id,
+            messages=[
+                ChatMessageRead.model_validate(message) for message in messages
+            ],
+        )
+
     def _prepare_turn(
         self,
         db: Session,
@@ -170,9 +196,11 @@ class ConversationService:
         question: str,
         conversation_id: int | None,
     ) -> tuple[Conversation, str, str]:
-        """Create/load conversation, store user message, return history/profile."""
+        """Load or create conversation, store user message, return history/profile."""
         if conversation_id is None:
-            conversation = create_conversation(db, user_id)
+            conversation = get_latest_user_conversation(db, user_id)
+            if conversation is None:
+                conversation = create_conversation(db, user_id)
         else:
             conversation = get_user_conversation(
                 db,

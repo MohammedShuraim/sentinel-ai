@@ -8,17 +8,23 @@ import type { RecommendationItem, StockRead } from "@/lib/api/types";
 interface RecommendationGridProps {
   items: RecommendationItem[];
   stocksById: Map<number, StockRead>;
+  watchedTickers: Set<string>;
+  watchBusyTicker: string | null;
   onView: (item: RecommendationItem) => void;
-  onAnalyze: (item: RecommendationItem) => void;
   onBuy: (item: RecommendationItem) => void;
+  onWatchlist: (item: RecommendationItem) => void;
+  onAnalyze: (item: RecommendationItem) => void;
 }
 
 export function RecommendationGrid({
   items,
   stocksById,
+  watchedTickers,
+  watchBusyTicker,
   onView,
-  onAnalyze,
   onBuy,
+  onWatchlist,
+  onAnalyze,
 }: RecommendationGridProps) {
   const reduceMotion = useReducedMotion();
 
@@ -38,9 +44,12 @@ export function RecommendationGrid({
           <RecommendationCard
             item={item}
             stock={stocksById.get(item.stock_id)}
+            watched={watchedTickers.has(item.ticker.toUpperCase())}
+            watchBusy={watchBusyTicker === item.ticker.toUpperCase()}
             onView={() => onView(item)}
-            onAnalyze={() => onAnalyze(item)}
             onBuy={() => onBuy(item)}
+            onWatchlist={() => onWatchlist(item)}
+            onAnalyze={() => onAnalyze(item)}
           />
         </motion.div>
       ))}

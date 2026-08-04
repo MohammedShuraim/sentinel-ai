@@ -4,10 +4,11 @@
 # Required GitHub Secrets:
 #   AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_ACCOUNT_ID
 #   EC2_HOST, EC2_USERNAME, EC2_SSH_KEY
+#   EC2_HOST = SSH target (IP or domain). Not used for browser-facing URLs.
 #
-# Optional Secrets / Variables:
-#   NEXT_PUBLIC_API_URL, NEXT_PUBLIC_SITE_URL  (default: http://$EC2_HOST:8000/:3000)
-#   EC2_APP_DIR  (default: /home/ec2-user/sentinel-ai/backend)
+# Production browser URLs are FIXED to DuckDNS below (not derived from EC2_HOST).
+# Stale NEXT_PUBLIC_* secrets containing the old Elastic IP are ignored/overridden.
+#   EC2_APP_DIR  default /home/ec2-user/sentinel-ai/backend
 # =============================================================================
 
 name: Deploy to AWS
@@ -69,15 +70,25 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       # Frontend NEXT_PUBLIC_* are baked in at image build time.
+      # Always use production DuckDNS. Override any stale Elastic-IP secrets.
       - name: Resolve frontend public URLs
         id: urls
         env:
-          EC2_HOST: ${{ secrets.EC2_HOST }}
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
           NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
         run: |
-          API_URL="${NEXT_PUBLIC_API_URL:-http://${EC2_HOST}:8000}"
-          SITE_URL="${NEXT_PUBLIC_SITE_URL:-http://${EC2_HOST}:3000}"
+          PROD_API="http://sentellent007.duckdns.org:8000"
+          PROD_SITE="http://sentellent007.duckdns.org:3000"
+          API_URL="${NEXT_PUBLIC_API_URL:-$PROD_API}"
+          SITE_URL="${NEXT_PUBLIC_SITE_URL:-$PROD_SITE}"
+          if [[ "$API_URL" == *"13.205.212.143"* ]] || [[ -z "$API_URL" ]]; then
+            echo "Forcing NEXT_PUBLIC_API_URL to DuckDNS (stale/empty secret ignored)"
+            API_URL="$PROD_API"
+          fi
+          if [[ "$SITE_URL" == *"13.205.212.143"* ]] || [[ -z "$SITE_URL" ]]; then
+            echo "Forcing NEXT_PUBLIC_SITE_URL to DuckDNS (stale/empty secret ignored)"
+            SITE_URL="$PROD_SITE"
+          fi
           echo "api_url=${API_URL}" >> "$GITHUB_OUTPUT"
           echo "site_url=${SITE_URL}" >> "$GITHUB_OUTPUT"
           echo "Using NEXT_PUBLIC_API_URL=${API_URL}"
@@ -140,15 +151,14 @@ jobs:
           echo "::add-mask::${PASS}"
           echo "password=${PASS}" >> "$GITHUB_OUTPUT"
 
-      - name: Copy deploy script to EC2
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          source: scripts/deploy-ec2.sh
-          target: /tmp/sentellent-deploy
-          strip_components: 1
+      # Avoid appleboy/scp-action: drone-scp opens multiple SSH connections
+      # (tar → scp → mkdir → untar → cleanup) and commonly hangs for minutes
+      # under SSH rate limits / dial timeouts. Ship the small deploy script
+      # over the same single SSH session used to run it.
+      - name: Encode deploy script
+        id: deploy-script
+        run: |
+          echo "content_b64=$(base64 -w0 scripts/deploy-ec2.sh)" >> "$GITHUB_OUTPUT"
 
       # Deploy the immutable github.sha tag from this run (not :latest).
       # :latest is still pushed for manual convenience; production always pins the SHA.
@@ -172,6 +182,7 @@ jobs:
             export BACKEND_IMAGE="${{ env.ECR_REGISTRY }}/${{ env.BACKEND_REPO }}:${{ env.IMAGE_TAG }}"
             export FRONTEND_IMAGE="${{ env.ECR_REGISTRY }}/${{ env.FRONTEND_REPO }}:${{ env.IMAGE_TAG }}"
             echo "Remote env check: ECR_REGISTRY=${ECR_REGISTRY} IMAGE_TAG=${IMAGE_TAG}"
-            chmod +x /tmp/sentellent-deploy/deploy-ec2.sh
-            /tmp/sentellent-deploy/deploy-ec2.sh
-            rm -f /tmp/sentellent-deploy/deploy-ec2.sh
+            echo "${{ steps.deploy-script.outputs.content_b64 }}" | base64 -d > /tmp/sentellent-deploy-ec2.sh
+            chmod +x /tmp/sentellent-deploy-ec2.sh
+            /tmp/sentellent-deploy-ec2.sh
+            rm -f /tmp/sentellent-deploy-ec2.sh

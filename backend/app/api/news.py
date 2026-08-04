@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.api.admin_gate import require_data_imports_enabled
 from app.core.dependencies import embedding_provider, llm_service
 from app.crud.news import create_news, get_news, get_news_by_stock
 from app.crud.stock import get_stock_by_ticker
@@ -55,6 +56,7 @@ def add_news(
     news: NewsCreate,
     stock_ticker: str,
     db: Session = Depends(get_db),
+    _: None = Depends(require_data_imports_enabled),
 ):
     db_stock = get_stock_by_ticker(db, stock_ticker)
 
@@ -78,6 +80,7 @@ def add_news(
 @router.post("/import")
 def import_news_from_provider(
     db: Session = Depends(get_db),
+    _: None = Depends(require_data_imports_enabled),
 ):
     provider = MarketauxProvider()
     news_analysis_service = NewsAnalysisService(llm_service)

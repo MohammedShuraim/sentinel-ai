@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
+from app.api.admin_gate import require_data_imports_enabled
 from app.db.dependencies import get_db
 from app.schemas.embedding import EmbeddingRead
 from app.services.document_builder_service import DocumentBuilderService
@@ -30,6 +31,7 @@ router = APIRouter(
 )
 def import_all_embeddings(
     db: Session = Depends(get_db),
+    _: None = Depends(require_data_imports_enabled),
 ):
     document_builder = DocumentBuilderService()
     chunking_service = TextChunkingService()

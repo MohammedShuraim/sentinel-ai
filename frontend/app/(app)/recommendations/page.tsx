@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -12,6 +12,7 @@ import { Spinner } from "@/components/common/Spinner";
 import { dashboardContainer, dashboardItem } from "@/components/dashboard/Section";
 import { SearchBar } from "@/components/stocks/SearchBar";
 import { TradeModal, type TradeTarget } from "@/components/portfolio/TradeModal";
+import { useToast } from "@/components/providers/ToastProvider";
 import { useRecommendations } from "@/hooks/useRecommendations";
 import { RecommendationSummary } from "@/components/recommendations/RecommendationSummary";
 import {
@@ -26,6 +27,12 @@ import { RecommendationGrid } from "@/components/recommendations/RecommendationG
 import { RecommendationDetailsDrawer } from "@/components/recommendations/RecommendationDetailsDrawer";
 import { RecommendationSkeleton } from "@/components/recommendations/RecommendationSkeleton";
 import { openRecommendationAnalysis } from "@/lib/chat/chatNavigation";
+import { getApiErrorMessage } from "@/lib/api/client";
+import {
+  followStock,
+  getFollowedStocks,
+  unfollowStock,
+} from "@/lib/api/stocks";
 import {
   confidenceForScore,
   labelForScore,
@@ -37,6 +44,7 @@ const collator = new Intl.Collator("en", { sensitivity: "base" });
 
 export default function RecommendationsPage() {
   const router = useRouter();
+  const { push } = useToast();
   const { items, stocksById, loading, refreshing, error, retry, refresh } =
     useRecommendations();
 
@@ -46,6 +54,26 @@ export default function RecommendationsPage() {
   const [selected, setSelected] = useState<RecommendationItem | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [tradeTarget, setTradeTarget] = useState<TradeTarget | null>(null);
+  const [watchedTickers, setWatchedTickers] = useState<Set<string>>(new Set());
+  const [watchBusyTicker, setWatchBusyTicker] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    void getFollowedStocks()
+      .then((follows) => {
+        if (!cancelled) {
+          setWatchedTickers(
+            new Set(follows.map((follow) => follow.ticker.toUpperCase())),
+          );
+        }
+      })
+      .catch(() => {
+        // Watchlist actions still work; empty set until user interacts.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const sectors = useMemo(
     () =>
@@ -139,6 +167,34 @@ export default function RecommendationsPage() {
 
   function viewStock(item: RecommendationItem) {
     router.push(`/stocks?details=${encodeURIComponent(item.ticker)}`);
+  }
+
+  async function toggleWatchlist(item: RecommendationItem) {
+    const ticker = item.ticker.toUpperCase();
+    if (watchBusyTicker) {
+      return;
+    }
+    const alreadyWatched = watchedTickers.has(ticker);
+    setWatchBusyTicker(ticker);
+    try {
+      if (alreadyWatched) {
+        await unfollowStock(item.ticker);
+        setWatchedTickers((current) => {
+          const next = new Set(current);
+          next.delete(ticker);
+          return next;
+        });
+        push(`${item.ticker} removed from watchlist`, "success");
+      } else {
+        await followStock(item.ticker);
+        setWatchedTickers((current) => new Set(current).add(ticker));
+        push(`${item.ticker} added to watchlist`, "success");
+      }
+    } catch (error) {
+      push(getApiErrorMessage(error), "error");
+    } finally {
+      setWatchBusyTicker(null);
+    }
   }
 
   const hasFilters = filter !== null || query.trim().length > 0;
@@ -297,9 +353,14 @@ export default function RecommendationsPage() {
               <RecommendationGrid
                 items={visibleItems}
                 stocksById={stocksById}
+                watchedTickers={watchedTickers}
+                watchBusyTicker={watchBusyTicker}
                 onView={openDetails}
-                onAnalyze={analyze}
                 onBuy={openTrade}
+                onWatchlist={(item) => {
+                  void toggleWatchlist(item);
+                }}
+                onAnalyze={analyze}
               />
             )}
           </motion.div>
@@ -310,6 +371,16 @@ export default function RecommendationsPage() {
         item={selected}
         stock={selected ? stocksById.get(selected.stock_id) : undefined}
         open={drawerOpen}
+        watched={
+          selected
+            ? watchedTickers.has(selected.ticker.toUpperCase())
+            : false
+        }
+        watchBusy={
+          selected
+            ? watchBusyTicker === selected.ticker.toUpperCase()
+            : false
+        }
         onClose={() => setDrawerOpen(false)}
         onAnalyze={() => {
           if (selected) {
@@ -329,6 +400,11 @@ export default function RecommendationsPage() {
             viewStock(selected);
           }
         }}
+        onWatchlist={() => {
+          if (selected) {
+            void toggleWatchlist(selected);
+          }
+        }}
       />
 
       <TradeModal
@@ -336,7 +412,11 @@ export default function RecommendationsPage() {
         target={tradeTarget}
         open={tradeTarget !== null}
         onClose={() => setTradeTarget(null)}
-        onSuccess={() => setTradeTarget(null)}
+        onSuccess={() => {
+          // Stay on Recommendations; TradeModal already shows a success toast.
+          // Portfolio / Dashboard refetch on next visit.
+          setTradeTarget(null);
+        }}
       />
     </motion.div>
   );

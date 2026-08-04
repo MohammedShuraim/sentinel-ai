@@ -18,10 +18,13 @@ interface RecommendationDetailsDrawerProps {
   item: RecommendationItem | null;
   stock?: StockRead;
   open: boolean;
+  watched?: boolean;
+  watchBusy?: boolean;
   onClose: () => void;
   onAnalyze: () => void;
   onBuy: () => void;
   onViewStock: () => void;
+  onWatchlist: () => void;
 }
 
 const sparkIcon = <SparkleIcon className="h-4 w-4" />;
@@ -99,10 +102,13 @@ export function RecommendationDetailsDrawer({
   item,
   stock,
   open,
+  watched = false,
+  watchBusy = false,
   onClose,
   onAnalyze,
   onBuy,
   onViewStock,
+  onWatchlist,
 }: RecommendationDetailsDrawerProps) {
   const label = item ? labelForScore(item.score) : null;
   const confidence = item ? confidenceForScore(item.score) : 0;
@@ -132,6 +138,7 @@ export function RecommendationDetailsDrawer({
                   {label}
                 </Badge>
               ) : null}
+              {watched ? <Badge variant="brand">Watching</Badge> : null}
             </div>
           </div>
         ) : null
@@ -139,6 +146,23 @@ export function RecommendationDetailsDrawer({
       footer={
         item ? (
           <div className="flex flex-col gap-2">
+            <Button variant="primary" className="w-full" onClick={onBuy}>
+              Buy
+            </Button>
+            <div className="flex items-center gap-2">
+              <Button variant="secondary" className="flex-1" onClick={onViewStock}>
+                View Details
+              </Button>
+              <Button
+                variant="outline"
+                className="flex-1"
+                loading={watchBusy}
+                disabled={watchBusy}
+                onClick={onWatchlist}
+              >
+                {watched ? "Watching" : "Add to Watchlist"}
+              </Button>
+            </div>
             <button
               type="button"
               onClick={onAnalyze}
@@ -147,18 +171,6 @@ export function RecommendationDetailsDrawer({
               {sparkIcon}
               Analyze with AI
             </button>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                className="flex-1 border-brand/30 text-brand hover:bg-brand-soft"
-                onClick={onBuy}
-              >
-                Buy Stock
-              </Button>
-              <Button variant="secondary" className="flex-1" onClick={onViewStock}>
-                View Stock
-              </Button>
-            </div>
           </div>
         ) : null
       }

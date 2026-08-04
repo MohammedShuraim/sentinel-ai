@@ -92,14 +92,26 @@ docker compose --profile web up --build
 EC2 runs **backend + frontend only**. PostgreSQL is Amazon RDS — no `postgres`
 container, and production Compose does **not** override `DATABASE_URL`.
 
+Public production hostname: **sentellent007.duckdns.org**
+
+| Surface | URL |
+|---------|-----|
+| Frontend | http://sentellent007.duckdns.org:3000 |
+| Backend API | http://sentellent007.duckdns.org:8000 |
+| Google OAuth callback | http://sentellent007.duckdns.org:8000/auth/google/callback |
+
 ```bash
 cd backend
 copy .env.prod.example .env
-# Edit .env: RDS DATABASE_URL, SECRET_KEY, OAuth, AI keys,
-# NEXT_PUBLIC_API_URL / NEXT_PUBLIC_SITE_URL = http://<elastic-ip>:8000 / :3000
-
-docker compose -f docker-compose.prod.yml --env-file .env up -d --build
+# Edit .env: RDS DATABASE_URL, SECRET_KEY, Google client id/secret, AI keys.
+# Keep CORS_ORIGINS / FRONTEND_URL / GOOGLE_REDIRECT_URI from .env.prod.example
+# (DuckDNS values). Then recreate backend so env is loaded:
+#   docker compose -f docker-compose.prod.yml up -d --force-recreate backend
 ```
+
+Frontend public URLs are build-time (`NEXT_PUBLIC_*`). See `frontend/.env.prod.example`
+and set GitHub secrets (or rely on `deploy.yml` DuckDNS defaults), then redeploy
+so the frontend image is rebuilt.
 
 Useful checks:
 
@@ -108,6 +120,8 @@ docker compose -f docker-compose.prod.yml ps
 curl http://127.0.0.1:8000/health
 curl http://127.0.0.1:8000/db-test
 curl http://127.0.0.1:3000/
+curl http://sentellent007.duckdns.org:8000/health
+curl -sI http://sentellent007.duckdns.org:3000/ | head
 ```
 
 Ensure the RDS security group allows TCP 5432 from the EC2 app security group,
@@ -125,10 +139,12 @@ Backend (`backend/.env`):
 - `GEMINI_API_KEY` / `GROQ_API_KEY` — AI providers
 - `CORS_ORIGINS`, `FRONTEND_URL` — allowed origins / post-login redirect
 
-Frontend (build-time, public — set in `.env` for Compose build args):
+Frontend (build-time, public — CI build-args / `frontend/.env.prod.example`):
 
-- `NEXT_PUBLIC_API_URL` — backend base URL reachable from the browser
-- `NEXT_PUBLIC_SITE_URL` — canonical origin for metadata/OG/sitemap
+- `NEXT_PUBLIC_API_URL` — backend base URL reachable from the browser  
+  (production: `http://sentellent007.duckdns.org:8000`)
+- `NEXT_PUBLIC_SITE_URL` — canonical origin for metadata/OG/sitemap  
+  (production: `http://sentellent007.duckdns.org:3000`)
 
 **Never commit real `.env` files** — the repo `.gitignore` excludes them.
 

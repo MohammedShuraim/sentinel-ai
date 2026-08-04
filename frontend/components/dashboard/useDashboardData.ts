@@ -14,7 +14,10 @@ import type {
   StockRead,
   TransactionRead,
 } from "@/lib/api/types";
-import { PROFILE_READY_EVENT } from "@/lib/onboarding/events";
+import {
+  PROFILE_READY_EVENT,
+  TRADE_COMPLETED_EVENT,
+} from "@/lib/onboarding/events";
 
 export interface DashboardErrors {
   summary: boolean;
@@ -59,12 +62,14 @@ export function useDashboardData(): DashboardData {
   const [reloadToken, setReloadToken] = useState(0);
 
   useEffect(() => {
-    function onProfileReady() {
+    function onReload() {
       setReloadToken((current) => current + 1);
     }
-    window.addEventListener(PROFILE_READY_EVENT, onProfileReady);
+    window.addEventListener(PROFILE_READY_EVENT, onReload);
+    window.addEventListener(TRADE_COMPLETED_EVENT, onReload);
     return () => {
-      window.removeEventListener(PROFILE_READY_EVENT, onProfileReady);
+      window.removeEventListener(PROFILE_READY_EVENT, onReload);
+      window.removeEventListener(TRADE_COMPLETED_EVENT, onReload);
     };
   }, []);
 

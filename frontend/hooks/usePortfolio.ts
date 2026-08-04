@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { getPortfolio, getPortfolioSummary } from "@/lib/api/portfolio";
 import { getStocks } from "@/lib/api/stocks";
 import { getTransactions } from "@/lib/api/transactions";
+import { TRADE_COMPLETED_EVENT } from "@/lib/onboarding/events";
 import type {
   PortfolioRead,
   PortfolioSummary,
@@ -145,6 +146,16 @@ export function usePortfolio(): UsePortfolio {
       cancelled = true;
     };
   }, [attempt]);
+
+  useEffect(() => {
+    function onTradeCompleted() {
+      setAttempt((current) => current + 1);
+    }
+    window.addEventListener(TRADE_COMPLETED_EVENT, onTradeCompleted);
+    return () => {
+      window.removeEventListener(TRADE_COMPLETED_EVENT, onTradeCompleted);
+    };
+  }, []);
 
   const retry = useCallback(() => {
     setLoading(true);

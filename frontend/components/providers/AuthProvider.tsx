@@ -18,6 +18,7 @@ import {
 import { getCurrentUser, registerUser } from "@/lib/api/users";
 import { isPublicRoute } from "@/lib/auth/routes";
 import { clearToken, getToken, setToken } from "@/lib/auth/token";
+import { clearChatSession } from "@/lib/chat/chatStore";
 import type { UserRead } from "@/lib/api/types";
 import { LoadingScreen } from "@/components/common/LoadingScreen";
 
@@ -126,6 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(() => {
     clearToken();
+    clearChatSession();
     setUser(null);
     router.replace("/login");
   }, [router]);

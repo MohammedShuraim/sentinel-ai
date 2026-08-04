@@ -29,6 +29,10 @@ class Settings(BaseSettings):
     CORS_ORIGINS: str = "http://localhost:3000,http://127.0.0.1:3000"
     FRONTEND_URL: str = "http://localhost:3000"
 
+    # Seed / import / master-data mutation routes (stocks/news/fundamentals/
+    # embeddings). Default True for local Docker; set False on public EC2.
+    ENABLE_DATA_IMPORTS: bool = True
+
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore",

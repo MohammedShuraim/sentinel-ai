@@ -167,10 +167,13 @@ def google_callback(
     jwt_token = create_access_token({"sub": db_user.email})
     logger.info("Google login succeeded for user_id=%s", db_user.id)
 
+    # Put the JWT in the URL hash fragment (not the query string) so it is
+    # never sent to the frontend origin as a Referer query param, and so
+    # server/access logs do not record it. The SPA reads location.hash.
     redirect = RedirectResponse(
         url=(
             f"{settings.FRONTEND_URL.rstrip('/')}"
-            f"/auth/callback?access_token={jwt_token}"
+            f"/auth/callback#access_token={jwt_token}"
         ),
         status_code=status.HTTP_302_FOUND,
     )

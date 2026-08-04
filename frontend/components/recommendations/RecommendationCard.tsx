@@ -25,17 +25,23 @@ const sparkIcon = <SparkleIcon className="h-3.5 w-3.5" />;
 interface RecommendationCardProps {
   item: RecommendationItem;
   stock?: StockRead;
+  watched: boolean;
+  watchBusy?: boolean;
   onView: () => void;
-  onAnalyze: () => void;
   onBuy: () => void;
+  onWatchlist: () => void;
+  onAnalyze: () => void;
 }
 
 export function RecommendationCard({
   item,
   stock,
+  watched,
+  watchBusy = false,
   onView,
-  onAnalyze,
   onBuy,
+  onWatchlist,
+  onAnalyze,
 }: RecommendationCardProps) {
   const label = labelForScore(item.score);
   const confidence = confidenceForScore(item.score);
@@ -47,14 +53,12 @@ export function RecommendationCard({
       className="group relative flex h-full flex-col gap-4 overflow-hidden p-5 transition-[border-color,box-shadow,transform] duration-200 hover:[border-color:var(--rec-accent)] hover:shadow-[0_14px_36px_rgb(0_0_0/0.4),0_0_26px_color-mix(in_srgb,var(--rec-accent)_14%,transparent)]"
       style={{ "--rec-accent": accent } as React.CSSProperties}
     >
-      {/* label accent hairline */}
       <span
         aria-hidden
         className="absolute inset-y-4 left-0 w-1 rounded-full transition-shadow duration-300 group-hover:shadow-[0_0_12px_var(--rec-accent)]"
         style={{ backgroundColor: accent }}
       />
 
-      {/* soft AI radial highlight on hover */}
       <span
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(85%_60%_at_85%_0%,rgb(167_139_250/0.07),transparent_60%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
@@ -67,6 +71,11 @@ export function RecommendationCard({
               {item.ticker}
             </span>
             {stock ? <Badge variant="neutral">{stock.sector}</Badge> : null}
+            {watched ? (
+              <Badge variant="brand" className="shrink-0">
+                Watching
+              </Badge>
+            ) : null}
           </div>
           <h3 className="line-clamp-1 text-sm text-fg-muted">
             {item.company_name}
@@ -111,27 +120,58 @@ export function RecommendationCard({
         </p>
       </blockquote>
 
-      <div className="relative mt-auto flex items-center gap-2 border-t border-line/60 pt-3.5">
-        <Button variant="secondary" size="sm" className="flex-1" onClick={onView}>
-          View Details
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="flex-1 text-ai hover:bg-ai-soft hover:text-ai"
-          onClick={onAnalyze}
-        >
-          {sparkIcon}
-          AI
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          className="flex-1 border-brand/30 text-brand hover:bg-brand-soft"
-          onClick={onBuy}
-        >
-          Buy
-        </Button>
+      <div className="relative mt-auto flex flex-col gap-2 border-t border-line/60 pt-3.5">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="primary"
+            size="sm"
+            className="flex-1"
+            onClick={(event) => {
+              event.stopPropagation();
+              onBuy();
+            }}
+          >
+            Buy
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            className="flex-1"
+            onClick={(event) => {
+              event.stopPropagation();
+              onView();
+            }}
+          >
+            View Details
+          </Button>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex-1"
+            loading={watchBusy}
+            disabled={watchBusy}
+            onClick={(event) => {
+              event.stopPropagation();
+              onWatchlist();
+            }}
+          >
+            {watched ? "Watching" : "Add to Watchlist"}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="flex-1 text-ai hover:bg-ai-soft hover:text-ai"
+            onClick={(event) => {
+              event.stopPropagation();
+              onAnalyze();
+            }}
+          >
+            {sparkIcon}
+            Analyze with AI
+          </Button>
+        </div>
       </div>
     </Card>
   );

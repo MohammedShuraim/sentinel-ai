@@ -10,7 +10,7 @@ from app.api.dependencies import get_current_user
 from app.core.dependencies import get_conversation_service
 from app.db.dependencies import get_db
 from app.models.user import User
-from app.schemas.chat import ChatRequest, ChatResponse
+from app.schemas.chat import ActiveConversationResponse, ChatRequest, ChatResponse
 from app.services.conversation_service import (
     ConversationNotFoundError,
     ConversationService,
@@ -22,6 +22,23 @@ router = APIRouter(
     prefix="/chat",
     tags=["Chat"],
 )
+
+
+@router.get(
+    "/active",
+    response_model=ActiveConversationResponse,
+    status_code=status.HTTP_200_OK,
+)
+def get_active_conversation(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+    conversation_service: ConversationService = Depends(get_conversation_service),
+):
+    """Return the current user's ongoing conversation with full message history."""
+    return conversation_service.get_active_conversation(
+        db=db,
+        user_id=current_user.id,
+    )
 
 
 @router.post(

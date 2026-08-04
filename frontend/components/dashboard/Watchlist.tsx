@@ -31,13 +31,13 @@ export function Watchlist({ watchlist, loading, error }: WatchlistProps) {
         </p>
       ) : watchlist.length === 0 ? (
         <div className="flex flex-1 flex-col items-start justify-center gap-2 py-2">
-          <p className="text-sm font-medium text-fg">No stocks followed yet</p>
+          <p className="text-sm font-medium text-fg">Watchlist is empty</p>
           <p className="text-sm text-fg-muted">
-            Follow tickers from the stocks page to build your watchlist.
+            Add tickers from AI recommendations to track them here.
           </p>
-          <Link href="/stocks" className="mt-1">
+          <Link href="/recommendations" className="mt-1">
             <Button variant="secondary" size="sm">
-              Browse stocks
+              View recommendations
             </Button>
           </Link>
         </div>

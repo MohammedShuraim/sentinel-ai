@@ -1,12 +1,22 @@
 import { apiClient } from "@/lib/api/client";
 import { API_BASE_URL } from "@/lib/env";
 import { getToken, clearToken } from "@/lib/auth/token";
-import type { ChatRequest, ChatResponse, RetrievedDocument } from "@/lib/api/types";
+import type {
+  ActiveConversationResponse,
+  ChatRequest,
+  ChatResponse,
+  RetrievedDocument,
+} from "@/lib/api/types";
 
 export async function sendChatMessage(
   payload: ChatRequest,
 ): Promise<ChatResponse> {
   const { data } = await apiClient.post<ChatResponse>("/chat/", payload);
+  return data;
+}
+
+export async function getActiveConversation(): Promise<ActiveConversationResponse> {
+  const { data } = await apiClient.get<ActiveConversationResponse>("/chat/active");
   return data;
 }
 

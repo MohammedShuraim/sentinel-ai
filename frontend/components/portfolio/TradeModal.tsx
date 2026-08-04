@@ -11,6 +11,7 @@ import { useToast } from "@/components/providers/ToastProvider";
 import { buyStock, sellStock } from "@/lib/api/transactions";
 import { getApiErrorMessage } from "@/lib/api/client";
 import { formatINR, formatQuantity } from "@/lib/format";
+import { dispatchTradeCompleted } from "@/lib/onboarding/events";
 import type { AppliedTrade } from "@/hooks/usePortfolio";
 
 export interface TradeTarget {
@@ -92,6 +93,7 @@ function TradeForm({
         `${mode === "buy" ? "Bought" : "Sold"} ${formatQuantity(qty)} ${target.ticker}`,
         "success",
       );
+      dispatchTradeCompleted();
       onSuccess({ type: mode === "buy" ? "BUY" : "SELL", ...payload });
       onClose();
     } catch (error) {

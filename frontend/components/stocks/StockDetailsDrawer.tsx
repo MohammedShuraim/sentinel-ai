@@ -11,16 +11,6 @@ import { openStockAnalysis } from "@/lib/chat/chatNavigation";
 import { formatDate } from "@/lib/format";
 import type { NewsRead, StockRead } from "@/lib/api/types";
 
-const FUNDAMENTAL_FIELDS = [
-  "Market Cap",
-  "PE Ratio",
-  "EPS",
-  "Book Value",
-  "Dividend Yield",
-  "ROE",
-  "Debt to Equity",
-] as const;
-
 type NewsStatus = "loading" | "error" | "success";
 
 interface StockDetailsDrawerProps {
@@ -145,30 +135,20 @@ export function StockDetailsDrawer({
         ) : null
       }
       footer={
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                if (!stock) {
-                  return;
-                }
-                onClose();
-                router.push(openStockAnalysis(stock));
-              }}
-              className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-ai-strong to-ai text-sm font-medium text-ai-ink shadow-[0_0_0_1px_rgb(167_139_250/0.3),0_0_20px_rgb(139_92_246/0.25)] transition-all hover:brightness-110 hover:shadow-[0_0_0_1px_rgb(167_139_250/0.4),0_0_28px_rgb(139_92_246/0.35)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ai/50"
-            >
-              <SparkleIcon className="h-4 w-4" />
-              AI Analysis
-            </button>
-            <Button variant="secondary" className="flex-1" disabled>
-              Buy Stock
-            </Button>
-          </div>
-          <p className="text-center text-xs text-fg-subtle">
-            Buy Stock arrives in the next sprint
-          </p>
-        </div>
+        <button
+          type="button"
+          onClick={() => {
+            if (!stock) {
+              return;
+            }
+            onClose();
+            router.push(openStockAnalysis(stock));
+          }}
+          className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-ai-strong to-ai text-sm font-medium text-ai-ink shadow-[0_0_0_1px_rgb(167_139_250/0.3),0_0_20px_rgb(139_92_246/0.25)] transition-all hover:brightness-110 hover:shadow-[0_0_0_1px_rgb(167_139_250/0.4),0_0_28px_rgb(139_92_246/0.35)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ai/50"
+        >
+          <SparkleIcon className="h-4 w-4" />
+          AI Analysis
+        </button>
       }
     >
       {stock ? (
@@ -194,25 +174,6 @@ export function StockDetailsDrawer({
                   {stock.is_active ? "Active" : "Inactive"}
                 </Badge>
               </InfoRow>
-            </dl>
-          </section>
-
-          <section className="flex flex-col gap-2.5">
-            <SectionTitle>Fundamentals</SectionTitle>
-            <dl className="grid grid-cols-2 gap-2">
-              {FUNDAMENTAL_FIELDS.map((field) => (
-                <div
-                  key={field}
-                  className="flex flex-col gap-1 rounded-xl border border-dashed border-line/70 bg-bg/40 px-3 py-2.5"
-                >
-                  <dt className="text-[11px] font-medium uppercase tracking-widest text-fg-subtle">
-                    {field}
-                  </dt>
-                  <dd className="text-xs font-normal italic text-fg-subtle/80">
-                    Not available
-                  </dd>
-                </div>
-              ))}
             </dl>
           </section>
 

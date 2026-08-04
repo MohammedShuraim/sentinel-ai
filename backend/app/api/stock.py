@@ -3,6 +3,7 @@ from pathlib import Path
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.api.admin_gate import require_data_imports_enabled
 from app.crud.stock import (
     create_stock,
     get_all_stocks,
@@ -41,6 +42,7 @@ def search(
 @router.post("/import")
 def import_stocks_from_csv(
     db: Session = Depends(get_db),
+    _: None = Depends(require_data_imports_enabled),
 ):
     service = StockImportService()
     inserted = service.import_stocks(db, str(NSE_STOCKS_CSV))
@@ -72,6 +74,7 @@ def read_stock(
 def add_stock(
     stock: StockCreate,
     db: Session = Depends(get_db),
+    _: None = Depends(require_data_imports_enabled),
 ):
     db_stock = create_stock(db, stock)
 

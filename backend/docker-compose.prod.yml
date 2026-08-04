@@ -19,9 +19,11 @@ services:
     image: ${BACKEND_IMAGE:-549596002797.dkr.ecr.ap-south-1.amazonaws.com/sentellent-backend:latest}
     container_name: sentellent-backend
     restart: unless-stopped
+    # Runtime config (CORS_ORIGINS, FRONTEND_URL, GOOGLE_REDIRECT_URI, DATABASE_URL,
+    # secrets) comes from host `.env`. Use DuckDNS values from `.env.prod.example`.
     env_file:
       - .env
-    # Intentionally no DATABASE_URL override — use Amazon RDS from .env.
+    # Intentionally no DATABASE_URL / CORS overrides here — edit `.env` on EC2.
     ports:
       - "8000:8000"
     networks:

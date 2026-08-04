@@ -1,6 +1,9 @@
+from datetime import datetime, timezone
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.models.conversation import Conversation
 from app.models.message import Message
 
 
@@ -17,6 +20,11 @@ def create_message(
     )
 
     db.add(db_message)
+
+    conversation = db.get(Conversation, conversation_id)
+    if conversation is not None:
+        conversation.updated_at = datetime.now(timezone.utc)
+
     db.commit()
     db.refresh(db_message)
 

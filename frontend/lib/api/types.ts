@@ -120,3 +120,15 @@ export interface ChatResponse {
   answer: string;
   sources: RetrievedDocument[];
 }
+
+export interface ChatMessageRead {
+  id: number;
+  role: string;
+  content: string;
+  created_at: string;
+}
+
+export interface ActiveConversationResponse {
+  conversation_id: number | null;
+  messages: ChatMessageRead[];
+}

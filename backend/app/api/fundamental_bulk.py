@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
+from app.api.admin_gate import require_data_imports_enabled
 from app.db.dependencies import get_db
 from app.schemas.fundamental import FundamentalRead
 from app.services.fundamental_bulk_import_service import (
@@ -21,6 +22,7 @@ router = APIRouter(
 )
 def import_all_fundamentals(
     db: Session = Depends(get_db),
+    _: None = Depends(require_data_imports_enabled),
 ):
     provider = YahooFinanceProvider()
     service = FundamentalBulkImportService(provider)

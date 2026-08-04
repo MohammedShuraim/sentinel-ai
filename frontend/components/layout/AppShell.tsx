@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { TopNav } from "@/components/layout/TopNav";
 import { OnboardingWizard } from "@/components/onboarding/OnboardingWizard";
@@ -8,6 +9,7 @@ import { useToast } from "@/components/providers/ToastProvider";
 import { getInvestorProfile } from "@/lib/api/investorProfile";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [onboardingOpen, setOnboardingOpen] = useState(false);
   const [profileChecked, setProfileChecked] = useState(false);
@@ -60,7 +62,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {profileChecked ? (
         <OnboardingWizard
           open={onboardingOpen}
-          onComplete={() => setOnboardingOpen(false)}
+          onComplete={() => {
+            setOnboardingOpen(false);
+            router.push("/dashboard");
+          }}
           onSuccessToast={(message) => push(message, "success")}
           onErrorToast={(message) => push(message, "error")}
         />
