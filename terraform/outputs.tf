@@ -1,6 +1,5 @@
 # =============================================================================
-# Placeholder outputs — no resources exist yet in this foundation sprint.
-# Uncomment / replace these once real resources are defined.
+# Stack outputs — networking layer + metadata
 # =============================================================================
 
 output "aws_region" {
@@ -19,21 +18,34 @@ output "environment" {
 }
 
 output "name_prefix" {
-  description = "Standardized name prefix for future resources."
+  description = "Standardized name prefix for resources."
   value       = local.name_prefix
 }
 
-# Placeholder: VPC ID once a network module exists.
-# output "vpc_id" {
-#   description = "ID of the Sentellent VPC."
-#   value       = module.network.vpc_id
-# }
+output "vpc_id" {
+  description = "ID of the Sentellent VPC."
+  value       = aws_vpc.main.id
+}
 
-# Placeholder: public subnet IDs once networking is provisioned.
-# output "public_subnet_ids" {
-#   description = "Public subnet IDs for load balancers / bastion hosts."
-#   value       = module.network.public_subnet_ids
-# }
+output "public_subnet_id" {
+  description = "ID of the public subnet."
+  value       = aws_subnet.public.id
+}
+
+output "internet_gateway_id" {
+  description = "ID of the Internet Gateway."
+  value       = aws_internet_gateway.main.id
+}
+
+output "public_route_table_id" {
+  description = "ID of the public route table."
+  value       = aws_route_table.public.id
+}
+
+output "security_group_id" {
+  description = "ID of the application security group."
+  value       = aws_security_group.app.id
+}
 
 # Placeholder: EC2 / compute instance ID once compute is provisioned.
 # output "instance_id" {
@@ -45,5 +57,4 @@ output "name_prefix" {
 # output "db_endpoint" {
 #   description = "RDS PostgreSQL endpoint hostname."
 #   value       = aws_db_instance.main.address
-#   # sensitive = true  # enable if endpoint should be treated as sensitive
 # }

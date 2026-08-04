@@ -26,6 +26,39 @@ variable "aws_region" {
   default     = "ap-south-1"
 }
 
+# ---------------------------------------------------------------------------
+# Networking
+# ---------------------------------------------------------------------------
+
+variable "vpc_cidr" {
+  description = "CIDR block for the Sentellent VPC."
+  type        = string
+  default     = "10.0.0.0/16"
+}
+
+variable "public_subnet_cidr" {
+  description = "CIDR block for the public subnet."
+  type        = string
+  default     = "10.0.1.0/24"
+}
+
+variable "public_subnet_az" {
+  description = "Availability zone for the public subnet."
+  type        = string
+  default     = "ap-south-1a"
+}
+
+variable "ssh_ingress_cidr" {
+  description = "IPv4 CIDR allowed to SSH (port 22). Must be set explicitly — do not use 0.0.0.0/0 in production."
+  type        = string
+  default     = "127.0.0.1/32"
+
+  validation {
+    condition     = can(cidrhost(var.ssh_ingress_cidr, 0))
+    error_message = "ssh_ingress_cidr must be a valid IPv4 CIDR (e.g. 203.0.113.10/32)."
+  }
+}
+
 variable "instance_type" {
   description = "Default EC2 instance type for future compute resources."
   type        = string

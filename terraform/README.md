@@ -1,7 +1,7 @@
-# Sentellent Terraform Foundation
+# Sentellent Terraform
 
-Production-oriented Terraform baseline for Sentellent. This sprint configures
-providers, variables, and placeholders only — **no AWS resources are created**.
+Production-oriented Terraform for Sentellent. Current scope: **networking layer
+only** (VPC, public subnet, IGW, route table, application security group).
 
 ## Prerequisites
 
@@ -14,7 +14,8 @@ providers, variables, and placeholders only — **no AWS resources are created**
 cp terraform.tfvars.example terraform.tfvars
 ```
 
-Do **not** commit `terraform.tfvars` if it contains real values or secrets.
+Set `ssh_ingress_cidr` to your public IP `/32` before relying on SSH. Do
+**not** commit `terraform.tfvars` if it contains real values or secrets.
 
 ## Commands
 
@@ -30,7 +31,7 @@ terraform init
 # Static validation of configuration
 terraform validate
 
-# Preview changes — should show no resources to add in this sprint
+# Preview networking changes (does not create resources)
 terraform plan
 ```
 
@@ -40,9 +41,10 @@ terraform plan
 |------|---------|
 | `versions.tf` | Pins Terraform and AWS provider versions |
 | `provider.tf` | AWS provider for `ap-south-1` with default tags |
-| `variables.tf` | Project, region, instance, key pair, DB, tags |
-| `main.tf` | Locals / comments; no resources yet |
-| `outputs.tf` | Current metadata outputs + commented placeholders |
+| `variables.tf` | Project, region, networking, instance, key pair, DB, tags |
+| `main.tf` | Shared locals (`name_prefix`, `common_tags`) |
+| `networking.tf` | VPC, subnet, IGW, routes, security group |
+| `outputs.tf` | VPC / subnet / IGW / route table / SG IDs |
 | `terraform.tfvars.example` | Safe example variable values |
 | `user_data.sh` | Placeholder bootstrap script for future EC2 |
 | `README.md` | This guide |
@@ -55,5 +57,5 @@ terraform plan
 
 ## Next sprints
 
-Expect modules for VPC/networking, security groups, IAM, EC2/ECS compute, and
-RDS PostgreSQL (+ pgvector) once this foundation is reviewed.
+Expect compute (EC2/ECS), IAM, and RDS PostgreSQL (+ pgvector). NAT Gateway,
+Elastic IP, Route53, and load balancers are intentionally out of scope for now.

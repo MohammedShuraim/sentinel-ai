@@ -8,6 +8,14 @@ aws_region   = "ap-south-1"
 instance_type = "t3.micro"
 key_pair_name = "sentellent-dev-keypair" # must already exist in the AWS account
 
+# Networking
+vpc_cidr           = "10.0.0.0/16"
+public_subnet_cidr = "10.0.1.0/24"
+public_subnet_az   = "ap-south-1a"
+# Replace with your public IP /32 before enabling SSH on real instances.
+# Documentation TEST-NET example — not a real open-world allowlist.
+ssh_ingress_cidr = "203.0.113.10/32"
+
 # Database (identifiers only — passwords via Secrets Manager / TF_VAR later)
 db_name              = "sentellent"
 db_username          = "sentellent_admin"
@@ -16,6 +24,6 @@ db_instance_class    = "db.t4g.micro"
 db_allocated_storage = 20
 
 tags = {
-  Owner = "platform-team"
+  Owner      = "platform-team"
   CostCenter = "engineering"
 }
