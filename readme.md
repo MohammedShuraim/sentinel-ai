@@ -69,39 +69,65 @@ npm run dev        # http://localhost:3000
 The frontend expects the backend at `NEXT_PUBLIC_API_URL` (default
 `http://localhost:8000`).
 
-## Docker Deployment (everything, one command)
+## Docker — local development
+
+Keeps the existing pgvector PostgreSQL container. Unchanged behavior:
 
 ```bash
 cd backend
 copy .env.example .env   # fill in values (DB password, SECRET_KEY, API keys, OAuth)
 docker compose up --build
+# frontend (optional profile):
+docker compose --profile web up --build
 ```
 
-Services started:
+| Service   | URL                   | Notes |
+|-----------|-----------------------|-------|
+| frontend  | http://localhost:3000 | profile `web` |
+| backend   | http://localhost:8000 | FastAPI + Alembic on start |
+| postgres  | compose network only  | pgvector; `DATABASE_URL` overridden to `@postgres:5432` |
 
-| Service   | URL                     | Notes |
-|-----------|-------------------------|-------|
-| frontend  | http://localhost:3000   | Next.js standalone build, non-root user |
-| backend   | http://localhost:8000   | FastAPI, health-checked via `/health` |
-| postgres  | localhost:5432          | pgvector, persistent volume, health-checked |
+## Docker — production on EC2 (Amazon RDS)
 
-Compose wires `DATABASE_URL` to the internal `postgres` hostname automatically;
-the browser reaches the backend through the host-mapped port 8000.
+EC2 runs **backend + frontend only**. PostgreSQL is Amazon RDS — no `postgres`
+container, and production Compose does **not** override `DATABASE_URL`.
+
+```bash
+cd backend
+copy .env.prod.example .env
+# Edit .env: RDS DATABASE_URL, SECRET_KEY, OAuth, AI keys,
+# NEXT_PUBLIC_API_URL / NEXT_PUBLIC_SITE_URL = http://<elastic-ip>:8000 / :3000
+
+docker compose -f docker-compose.prod.yml --env-file .env up -d --build
+```
+
+Useful checks:
+
+```bash
+docker compose -f docker-compose.prod.yml ps
+curl http://127.0.0.1:8000/health
+curl http://127.0.0.1:8000/db-test
+curl http://127.0.0.1:3000/
+```
+
+Ensure the RDS security group allows TCP 5432 from the EC2 app security group,
+and EC2 security group allows 22 / 80 / 443 / 3000 / 8000 as configured in Terraform.
 
 ## Environment Variables
 
-Backend (`backend/.env`, see `backend/.env.example`):
+Backend (`backend/.env`):
 
-- `DATABASE_URL`, `POSTGRES_*` — database connection (compose overrides the host)
+- Local template: `backend/.env.example`
+- Production template: `backend/.env.prod.example`
+- `DATABASE_URL` — local compose overrides to `postgres`; prod uses RDS as-is
 - `SECRET_KEY` — JWT signing key (`openssl rand -hex 32`)
 - `GOOGLE_CLIENT_ID/SECRET/REDIRECT_URI` — Google OAuth
-- `GEMINI_API_KEY` / `GROQ_API_KEY` — AI providers (`PRIMARY_PROVIDER`, `FALLBACK_PROVIDER`, `GROQ_MODEL`)
-- `FINNHUB_API_KEY`, `MARKETAUX_API_KEY` — market/news data (optional)
-- `CORS_ORIGINS`, `FRONTEND_URL` — comma-separated allowed origins / post-login redirect
+- `GEMINI_API_KEY` / `GROQ_API_KEY` — AI providers
+- `CORS_ORIGINS`, `FRONTEND_URL` — allowed origins / post-login redirect
 
-Frontend (build-time, public):
+Frontend (build-time, public — set in `.env` for Compose build args):
 
-- `NEXT_PUBLIC_API_URL` — backend base URL
+- `NEXT_PUBLIC_API_URL` — backend base URL reachable from the browser
 - `NEXT_PUBLIC_SITE_URL` — canonical origin for metadata/OG/sitemap
 
 **Never commit real `.env` files** — the repo `.gitignore` excludes them.
@@ -148,7 +174,9 @@ Interactive docs: `http://localhost:8000/docs` (Swagger UI).
 │   │   └── schemas/         # Pydantic contracts
 │   ├── alembic/             # migrations
 │   ├── Dockerfile
-│   └── docker-compose.yml   # postgres + backend + frontend
+│   ├── docker-compose.yml        # local: postgres + backend (+ frontend profile)
+│   ├── docker-compose.prod.yml   # EC2: backend + frontend → Amazon RDS
+│   └── .env.prod.example
 ├── docs/                    # full design documentation
 └── README.md
 ```

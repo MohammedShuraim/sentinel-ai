@@ -24,14 +24,17 @@ ssh_ingress_cidr = "203.0.113.10/32"
 #   $env:TF_VAR_db_password = "your-strong-password"   # PowerShell
 #   export TF_VAR_db_password='your-strong-password'  # bash
 # Or leave unset to auto-generate (value stored in Terraform state only).
-db_name                    = "sentellent"
-db_username                = "sentellent_admin"
-db_engine_version          = "16"
-db_instance_class          = "db.t4g.micro"
-db_allocated_storage       = 20
-db_max_allocated_storage   = 100
-db_backup_retention_period = 7
-db_multi_az                = false
+db_name                  = "sentellent"
+db_username              = "sentellent_admin"
+db_engine_version        = "16"
+db_instance_class        = "db.t4g.micro" # Free Tier eligible (prefer over larger classes)
+db_allocated_storage     = 20
+db_max_allocated_storage = 20 # equal to allocated → no storage autoscaling (Free Tier safe)
+db_storage_type          = "gp3"
+# Free Tier accounts in this project allow max 1 day of automated backup retention.
+# Raise (e.g. to 7) only after Free Tier backup limits no longer apply.
+db_backup_retention_period = 1
+db_multi_az                = false # Multi-AZ is not Free Tier eligible
 db_deletion_protection     = false
 db_skip_final_snapshot     = true
 

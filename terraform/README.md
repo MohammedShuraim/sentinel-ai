@@ -5,6 +5,8 @@ Production-oriented Terraform for Sentellent. Current scope:
 - **Networking** — VPC, public subnet, IGW, route table, app security group
 - **Compute** — Amazon Linux 2023 EC2, IAM instance profile (SSM), Elastic IP
 - **Database** — private subnets, DB subnet group, RDS PostgreSQL (encrypted, private)
+  - Free Tier note: `db_backup_retention_period` defaults to **1** day (account max);
+    Multi-AZ stays off; storage autoscaling disabled by default (`max == allocated`)
 
 ## Prerequisites
 

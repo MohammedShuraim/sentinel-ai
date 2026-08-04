@@ -154,15 +154,26 @@ variable "db_allocated_storage" {
 }
 
 variable "db_max_allocated_storage" {
-  description = "Upper limit for storage autoscaling in GiB (0 disables)."
+  description = "Upper limit for storage autoscaling in GiB. Set equal to allocated storage (or 0) to disable autoscaling — recommended for Free Tier accounts."
   type        = number
-  default     = 100
+  default     = 20
+}
+
+variable "db_storage_type" {
+  description = "RDS storage type (gp3 is Free Tier eligible General Purpose SSD)."
+  type        = string
+  default     = "gp3"
+
+  validation {
+    condition     = contains(["gp2", "gp3"], var.db_storage_type)
+    error_message = "db_storage_type must be gp2 or gp3 for this academic Free Tier–compatible setup."
+  }
 }
 
 variable "db_backup_retention_period" {
-  description = "Automated backup retention in days (1–35). Must be > 0."
+  description = "Automated backup retention in days (1–35). This AWS Free Tier account allows a maximum of 1 day — raise only after leaving Free Tier restrictions."
   type        = number
-  default     = 7
+  default     = 1
 
   validation {
     condition     = var.db_backup_retention_period >= 1 && var.db_backup_retention_period <= 35

@@ -10,7 +10,7 @@
 #   2. Install Docker Engine + Docker Compose plugin
 #   3. Configure the Docker daemon / log rotation
 #   4. Authenticate to a container registry if needed
-#   5. Pull and start Sentellent backend / frontend / postgres stack
+#   5. Start backend + frontend via docker-compose.prod.yml (RDS, no local Postgres)
 #   6. Write health-check / cloud-init completion markers
 # =============================================================================
 
@@ -27,8 +27,9 @@ echo "[sentellent] user-data placeholder starting on $(hostname) at $(date -u +%
 # usermod -aG docker ec2-user
 
 # --- Application bootstrap (future) ------------------------------------------
-# mkdir -p /opt/sentellent
-# # render compose file / env from SSM or Secrets Manager
-# docker compose -f /opt/sentellent/docker-compose.yml up -d
+# mkdir -p /opt/sentellent/backend
+# # Place .env with DATABASE_URL → Amazon RDS (never override in compose.prod)
+# cd /opt/sentellent/backend
+# docker compose -f docker-compose.prod.yml --env-file .env up -d --build
 
 echo "[sentellent] user-data placeholder complete — no packages installed"

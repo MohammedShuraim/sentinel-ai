@@ -1,0 +1,67 @@
+# =============================================================================
+# Sentellent — production Compose (EC2 + Amazon RDS)
+#
+# Runs ONLY backend + frontend. Does NOT start a PostgreSQL container.
+# DATABASE_URL must point at Amazon RDS and comes from the environment / .env
+# without override.
+#
+# Usage (on EC2, from backend/):
+#   docker compose -f docker-compose.prod.yml --env-file .env up -d --build
+# =============================================================================
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sentellent-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    # Intentionally no DATABASE_URL override — use Amazon RDS from .env.
+    ports:
+      - "8000:8000"
+    networks:
+      - sentellent
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8000/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      # First boot downloads embedding weights into HF_HOME (~1–2 min cold)
+      start_period: 180s
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+      args:
+        # Inlined into the browser bundle at build time — use the public EC2 /
+        # Elastic IP (or domain) URLs, not Docker service names.
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:?Set NEXT_PUBLIC_API_URL to the public backend URL}
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?Set NEXT_PUBLIC_SITE_URL to the public site URL}
+    container_name: sentellent-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - sentellent
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+networks:
+  sentellent:
+    driver: bridge
