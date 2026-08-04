@@ -2,7 +2,7 @@
 # Sentellent — AWS networking layer
 #
 # Creates VPC, one public subnet, Internet Gateway, public routing, and the
-# application security group. No EC2, RDS, IAM, EIP, Route53, NAT, or ALB.
+# application security group. Compute (EC2 / IAM / EIP) lives in compute.tf.
 # =============================================================================
 
 resource "aws_vpc" "main" {

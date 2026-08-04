@@ -1,12 +1,12 @@
 #!/bin/bash
 # =============================================================================
-# Sentellent EC2 user-data placeholder
+# Sentellent EC2 user-data (Amazon Linux 2023)
 #
-# This script is intentionally a no-op foundation. Wire it into an
-# aws_instance (or launch template) in a later sprint once compute exists.
+# Referenced by aws_instance.app in compute.tf. Currently a lightweight
+# placeholder — extend in a later sprint for Docker / app bootstrap.
 #
-# Future responsibilities (outline only — do not implement here yet):
-#   1. Update OS packages
+# Future responsibilities (outline only):
+#   1. Update OS packages (dnf)
 #   2. Install Docker Engine + Docker Compose plugin
 #   3. Configure the Docker daemon / log rotation
 #   4. Authenticate to a container registry if needed
@@ -19,13 +19,12 @@ set -euo pipefail
 echo "[sentellent] user-data placeholder starting on $(hostname) at $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
 # --- Package refresh (future) ------------------------------------------------
-# apt-get update -y
-# apt-get upgrade -y
+# dnf update -y
 
 # --- Docker installation (future) --------------------------------------------
-# curl -fsSL https://get.docker.com | sh
+# dnf install -y docker
 # systemctl enable --now docker
-# usermod -aG docker ubuntu   # or the AMI default user
+# usermod -aG docker ec2-user
 
 # --- Application bootstrap (future) ------------------------------------------
 # mkdir -p /opt/sentellent

@@ -1,9 +1,9 @@
 # =============================================================================
 # Sentellent — shared locals
 #
-# Networking lives in networking.tf. Later sprints may add compute / database
-# modules. Keep secrets out of Terraform source (TF_VAR_*, Secrets Manager,
-# or gitignored terraform.tfvars).
+# Networking: networking.tf · Compute: compute.tf
+# Keep secrets out of Terraform source (TF_VAR_*, Secrets Manager, or
+# gitignored terraform.tfvars).
 # =============================================================================
 
 locals {
@@ -20,6 +20,5 @@ locals {
 }
 
 # Future resources (not in this sprint):
-# - module "compute" { ... }   # EC2 / ECS / ALB
 # - module "database" { ... }  # RDS PostgreSQL + pgvector
-# - IAM roles, Elastic IPs, Route53, NAT Gateway
+# - Route53, NAT Gateway, Load Balancer, Auto Scaling, CloudFront

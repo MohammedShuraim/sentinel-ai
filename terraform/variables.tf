@@ -60,15 +60,20 @@ variable "ssh_ingress_cidr" {
 }
 
 variable "instance_type" {
-  description = "Default EC2 instance type for future compute resources."
+  description = "EC2 instance type for the Sentellent application host."
   type        = string
   default     = "t3.micro"
 }
 
 variable "key_pair_name" {
-  description = "Name of an existing EC2 key pair in the target account/region. Do not put private key material here."
+  description = "Name of an existing EC2 key pair in the target account/region (e.g. sentellent-key). Terraform does not create the key pair."
   type        = string
-  default     = ""
+  default     = "sentellent-key"
+
+  validation {
+    condition     = length(var.key_pair_name) > 0
+    error_message = "key_pair_name must reference an existing EC2 key pair name."
+  }
 }
 
 # ---------------------------------------------------------------------------

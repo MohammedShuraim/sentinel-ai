@@ -6,7 +6,8 @@ environment  = "dev"
 aws_region   = "ap-south-1"
 
 instance_type = "t3.micro"
-key_pair_name = "sentellent-dev-keypair" # must already exist in the AWS account
+# Existing key pair in ap-south-1 — Terraform does not create it.
+key_pair_name = "sentellent-key"
 
 # Networking
 vpc_cidr           = "10.0.0.0/16"
