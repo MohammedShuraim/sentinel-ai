@@ -77,8 +77,56 @@ class RecommendationService:
                 profile.investment_style is not None,
                 profile.preferred_market_cap is not None,
                 profile.dividend_preference is not None,
+                profile.investment_horizon is not None,
+                profile.investment_budget is not None,
+                profile.investment_goals is not None,
+                profile.experience_level is not None,
             )
         )
+
+    def confidence_for_score(self, score: int) -> int:
+        """Map raw score (max 12) to a 0–100 confidence percent."""
+        return max(0, min(100, round((score / 12) * 100)))
+
+    def risk_level_for_stock(self, stock: Stock) -> str:
+        """Derive a display risk level from debt-to-equity fundamentals."""
+        if stock.fundamental is None or stock.fundamental.debt_to_equity is None:
+            return "Moderate"
+
+        de = self._normalize_debt_to_equity(stock.fundamental.debt_to_equity)
+        if de <= 0.5:
+            return "Low"
+        if de <= 1.5:
+            return "Moderate"
+        return "High"
+
+    def time_horizon_for_profile(self, profile: InvestorProfile) -> str:
+        """Prefer explicit profile horizon; else infer from investment style."""
+        if profile.investment_horizon:
+            return profile.investment_horizon
+
+        style = (profile.investment_style or "").strip().lower()
+        if "momentum" in style:
+            return "Short-term"
+        if "growth" in style:
+            return "Medium-term"
+        if "dividend" in style or "value" in style or "income" in style:
+            return "Long-term"
+        return "Medium-term"
+
+    def expected_return_for_score(
+        self,
+        score: int,
+    ) -> tuple[float | None, str]:
+        """AI estimate band from match score — not a guaranteed return."""
+        confidence = self.confidence_for_score(score)
+        if confidence >= 75:
+            return 15.0, "High"
+        if confidence >= 50:
+            return 10.0, "Moderate"
+        if confidence >= 30:
+            return 6.0, "Limited"
+        return None, "Weak"
 
     def _matches_risk_tolerance(
         self,

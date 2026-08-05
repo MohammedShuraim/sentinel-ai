@@ -44,11 +44,11 @@ export function Hero({
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_120%_at_85%_0%,rgb(52_211_153/0.09),transparent_65%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_120%_at_85%_0%,rgb(214_40_40/0.09),transparent_65%)]"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(45%_90%_at_8%_100%,rgb(167_139_250/0.06),transparent_65%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(45%_90%_at_8%_100%,rgb(214_40_40/0.06),transparent_65%)]"
       />
       <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <motion.div
@@ -101,7 +101,7 @@ export function Hero({
           {loading ? (
             <div className="skeleton h-10 w-40" />
           ) : (
-            <p className="tnum font-display text-4xl font-semibold tracking-tight text-fg drop-shadow-[0_0_28px_rgb(52_211_153/0.18)]">
+            <p className="tnum font-display text-4xl font-semibold tracking-tight text-fg drop-shadow-[0_0_28px_rgb(214_40_40/0.18)]">
               {summary ? (
                 <CountUp value={summary.total_invested} format={formatINRCompact} />
               ) : (

@@ -28,15 +28,15 @@ export function MarketInsight({ topPick, loading, error }: MarketInsightProps) {
       {/* animated accent hairline: AI purple flowing into brand mint */}
       <div
         aria-hidden
-        className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgb(167_139_250/0.55),rgb(52_211_153/0.55),transparent)] bg-[size:200%_100%] animate-shimmer"
+        className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgb(214_40_40/0.55),rgb(214_40_40/0.55),transparent)] bg-[size:200%_100%] animate-shimmer"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(80%_100%_at_100%_0%,rgb(52_211_153/0.07),transparent_60%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(80%_100%_at_100%_0%,rgb(214_40_40/0.07),transparent_60%)]"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_80%_at_0%_100%,rgb(167_139_250/0.05),transparent_60%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_80%_at_0%_100%,rgb(214_40_40/0.05),transparent_60%)]"
       />
 
       <div className="relative flex items-center justify-between gap-3">

@@ -1,65 +1,65 @@
 @import "tailwindcss";
 
 /* ------------------------------------------------------------------ */
-/* Sentellent design tokens (Tailwind v4 theme)                        */
+/* Sentellent design tokens — matte black / deep red fintech           */
 /* ------------------------------------------------------------------ */
 @theme {
   /* Typography */
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+  --font-sans: var(--font-outfit), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", sans-serif;
-  --font-display: var(--font-space-grotesk), var(--font-inter), ui-sans-serif,
+  --font-display: var(--font-space-grotesk), var(--font-outfit), ui-sans-serif,
     system-ui, sans-serif;
 
   /* Surfaces */
-  --color-bg: #090b0f;
-  --color-surface: #0f1218;
-  --color-elevated: #151923;
-  --color-overlay: #1b212d;
+  --color-bg: #0b0b0b;
+  --color-surface: #141414;
+  --color-elevated: #1b1b1b;
+  --color-overlay: #222222;
 
   /* Borders */
-  --color-line: #232a37;
-  --color-line-strong: #2f3949;
+  --color-line: #2a2a2a;
+  --color-line-strong: #3a3a3a;
 
   /* Text */
-  --color-fg: #f3f6f9;
-  --color-fg-muted: #98a3b3;
-  --color-fg-subtle: #5d6878;
+  --color-fg: #ffffff;
+  --color-fg-muted: #a7a7a7;
+  --color-fg-subtle: #6b6b6b;
 
-  /* Brand (signature mint) */
-  --color-brand: #34d399;
-  --color-brand-strong: #10b981;
-  --color-brand-ink: #04150e;
-  --color-brand-soft: rgb(52 211 153 / 0.12);
+  /* Brand (deep red) */
+  --color-brand: #d62828;
+  --color-brand-strong: #e63946;
+  --color-brand-ink: #ffffff;
+  --color-brand-soft: rgb(214 40 40 / 0.14);
 
-  /* AI accent (reserved for AI surfaces only) */
-  --color-ai: #a78bfa;
-  --color-ai-strong: #8b5cf6;
+  /* AI accent (same family — red, not purple) */
+  --color-ai: #e63946;
+  --color-ai-strong: #d62828;
   --color-ai-ink: #ffffff;
-  --color-ai-soft: rgb(167 139 250 / 0.12);
+  --color-ai-soft: rgb(230 57 70 / 0.14);
 
   /* Market semantics */
-  --color-profit: #34d399;
-  --color-profit-soft: rgb(52 211 153 / 0.12);
-  --color-loss: #fb7185;
-  --color-loss-soft: rgb(251 113 133 / 0.12);
-  --color-warn: #fbbf24;
-  --color-warn-soft: rgb(251 191 36 / 0.12);
-  --color-info: #60a5fa;
-  --color-info-soft: rgb(96 165 250 / 0.12);
+  --color-profit: #16c784;
+  --color-profit-soft: rgb(22 199 132 / 0.14);
+  --color-loss: #e63946;
+  --color-loss-soft: rgb(230 57 70 / 0.14);
+  --color-warn: #f4b400;
+  --color-warn-soft: rgb(244 180 0 / 0.14);
+  --color-info: #a7a7a7;
+  --color-info-soft: rgb(167 167 167 / 0.12);
 
   /* Layout spacing system */
   --spacing-sidebar: 16rem;
   --spacing-topnav: 4rem;
 
-  /* Radius */
-  --radius-card: 1rem;
+  /* Radius — 14–18px premium */
+  --radius-card: 1.125rem;
 
   /* Elevation */
   --shadow-card: inset 0 1px 0 0 rgb(255 255 255 / 0.03),
-    0 10px 30px rgb(0 0 0 / 0.35);
-  --shadow-pop: 0 16px 48px rgb(0 0 0 / 0.5);
-  --shadow-glow: 0 0 0 1px rgb(52 211 153 / 0.28),
-    0 0 24px rgb(52 211 153 / 0.18);
+    0 12px 32px rgb(0 0 0 / 0.45);
+  --shadow-pop: 0 20px 56px rgb(0 0 0 / 0.55);
+  --shadow-glow: 0 0 0 1px rgb(214 40 40 / 0.35),
+    0 0 28px rgb(214 40 40 / 0.22);
 
   /* Motion */
   --animate-fade-in: fade-in 0.4s ease-out both;
@@ -106,8 +106,8 @@
 .streaming-cursor > div > :last-child::after {
   content: "▌";
   margin-left: 2px;
-  color: var(--color-ai);
-  text-shadow: 0 0 10px rgb(167 139 250 / 0.6);
+  color: var(--color-brand);
+  text-shadow: 0 0 10px rgb(214 40 40 / 0.55);
   animation: cursor-blink 1s ease-in-out infinite;
 }
 
@@ -131,10 +131,14 @@
 
   body {
     @apply bg-bg font-sans text-fg antialiased;
+    background-image:
+      radial-gradient(56% 42% at 50% -8%, rgb(214 40 40 / 0.07), transparent 70%),
+      radial-gradient(40% 36% at 100% 0%, rgb(214 40 40 / 0.03), transparent 65%);
+    background-attachment: fixed;
   }
 
   ::selection {
-    background: rgb(52 211 153 / 0.28);
+    background: rgb(214 40 40 / 0.35);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -153,16 +157,16 @@
 /* Glassmorphism                                                       */
 /* ------------------------------------------------------------------ */
 @utility glass {
-  background: rgb(15 18 24 / 0.72);
-  backdrop-filter: blur(16px) saturate(150%);
-  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  background: rgb(27 27 27 / 0.72);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
   border: 1px solid var(--color-line);
 }
 
 @utility glass-strong {
-  background: rgb(11 13 18 / 0.88);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  background: rgb(11 11 11 / 0.88);
+  backdrop-filter: blur(22px) saturate(150%);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
   border: 1px solid var(--color-line);
 }
 
@@ -184,22 +188,22 @@
 }
 
 @utility card-hover {
-  transition: transform 0.2s ease, border-color 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: transform 0.22s ease, border-color 0.22s ease,
+    box-shadow 0.22s ease;
 
   &:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px);
     border-color: var(--color-line-strong);
-    box-shadow: var(--shadow-card);
+    box-shadow: var(--shadow-card), 0 0 24px rgb(214 40 40 / 0.08);
   }
 }
 
 @utility text-gradient-brand {
   background-image: linear-gradient(
     120deg,
-    var(--color-brand),
-    #7ef0c4 55%,
-    var(--color-info)
+    #ffffff 0%,
+    #e63946 45%,
+    #d62828 100%
   );
   -webkit-background-clip: text;
   background-clip: text;
@@ -241,7 +245,7 @@
 }
 
 @utility skeleton {
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
   background: linear-gradient(
     90deg,
     var(--color-surface) 25%,

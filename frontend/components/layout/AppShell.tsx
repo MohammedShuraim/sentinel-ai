@@ -64,7 +64,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           open={onboardingOpen}
           onComplete={() => {
             setOnboardingOpen(false);
-            router.push("/dashboard");
+            router.push("/recommendations");
           }}
           onSuccessToast={(message) => push(message, "success")}
           onErrorToast={(message) => push(message, "error")}

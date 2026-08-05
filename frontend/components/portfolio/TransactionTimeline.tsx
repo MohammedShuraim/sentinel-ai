@@ -59,7 +59,7 @@ export function TransactionTimeline({
                   aria-hidden
                   className={`mt-1 h-2.5 w-2.5 shrink-0 rounded-full ring-4 ${
                     isBuy
-                      ? "bg-profit ring-profit/10 shadow-[0_0_10px_rgb(52_211_153/0.4)]"
+                      ? "bg-profit ring-profit/10 shadow-[0_0_10px_rgb(22_199_132/0.4)]"
                       : "bg-loss ring-loss/10 shadow-[0_0_10px_rgb(251_113_133/0.35)]"
                   }`}
                 />

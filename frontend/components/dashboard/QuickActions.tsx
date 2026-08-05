@@ -18,8 +18,8 @@ const actions = [
     label: "Ask the AI analyst",
     description: "Chat about any NSE stock",
     tile: "bg-ai-soft text-ai",
-    tileGlow: "group-hover:shadow-[0_0_18px_rgb(167_139_250/0.30)]",
-    wash: "bg-[radial-gradient(130%_130%_at_100%_0%,rgb(167_139_250/0.07),transparent_60%)]",
+    tileGlow: "group-hover:shadow-[0_0_18px_rgb(214_40_40/0.30)]",
+    wash: "bg-[radial-gradient(130%_130%_at_100%_0%,rgb(214_40_40/0.07),transparent_60%)]",
     icon: (className: string) => (
       <svg viewBox="0 0 24 24" className={className} {...strokeProps}>
         <path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5c-1.2 0-2.4-.3-3.4-.8L4 19.5l1.4-4.3a7.5 7.5 0 1 1 14.6-3.7Z" />
@@ -31,8 +31,8 @@ const actions = [
     label: "Manage portfolio",
     description: "Holdings and transactions",
     tile: "bg-brand-soft text-brand",
-    tileGlow: "group-hover:shadow-[0_0_18px_rgb(52_211_153/0.30)]",
-    wash: "bg-[radial-gradient(130%_130%_at_100%_0%,rgb(52_211_153/0.07),transparent_60%)]",
+    tileGlow: "group-hover:shadow-[0_0_18px_rgb(214_40_40/0.30)]",
+    wash: "bg-[radial-gradient(130%_130%_at_100%_0%,rgb(214_40_40/0.07),transparent_60%)]",
     icon: (className: string) => (
       <svg viewBox="0 0 24 24" className={className} {...strokeProps}>
         <rect x="3.5" y="8" width="17" height="12" rx="2" />

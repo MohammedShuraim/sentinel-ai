@@ -18,7 +18,7 @@ interface NeuralNode {
   x: number;
   y: number;
   r: number;
-  purple: boolean;
+  accent: boolean;
 }
 
 type Edge = readonly [number, number];
@@ -38,7 +38,7 @@ function generateNetwork(seed: number): { nodes: NeuralNode[]; edges: Edge[] } {
         x: ((col + 0.5) / cols) * W + (rand() - 0.5) * (W / cols) * 0.7,
         y: ((row + 0.5) / rows) * H + (rand() - 0.5) * (H / rows) * 0.7,
         r: 1.6 + rand() * 1.8,
-        purple: rand() < 0.28,
+        accent: rand() < 0.35,
       });
     }
   }
@@ -106,7 +106,7 @@ export function NeuralNetwork() {
         {edges.map(([a, b], i) => {
           const from = nodes[a];
           const to = nodes[b];
-          const purple = from.purple || to.purple;
+          const accent = from.accent || to.accent;
           return (
             <line
               key={`e${a}-${b}`}
@@ -114,7 +114,7 @@ export function NeuralNetwork() {
               y1={from.y}
               x2={to.x}
               y2={to.y}
-              stroke={purple ? "#a78bfa" : "#34d399"}
+              stroke={accent ? "#E63946" : "#D62828"}
               strokeWidth={1}
               style={{
                 strokeOpacity: 0.1,
@@ -135,7 +135,7 @@ export function NeuralNetwork() {
               <circle
                 key={`pulse-${a}-${b}`}
                 r={2.2}
-                fill={nodes[a].purple || nodes[b].purple ? "#a78bfa" : "#34d399"}
+                fill={nodes[a].accent || nodes[b].accent ? "#E63946" : "#D62828"}
                 opacity={0.85}
               >
                 <animateMotion
@@ -150,7 +150,7 @@ export function NeuralNetwork() {
 
         {/* nodes with halo glow */}
         {nodes.map((node, i) => {
-          const color = node.purple ? "#a78bfa" : "#34d399";
+          const color = node.accent ? "#E63946" : "#D62828";
           return (
             <g
               key={`n${i}`}

@@ -58,8 +58,8 @@ export function MarketSnapshot({ stocks }: { stocks: StockRead[] }) {
   }, [stocks]);
 
   const cards = [
-    { key: "total", label: "Total Stocks", value: stats.total, icon: icons.total, tone: "text-brand bg-brand-soft", glow: "hover:border-brand/40 hover:shadow-[0_10px_30px_rgb(0_0_0/0.35),0_0_22px_rgb(52_211_153/0.12)]" },
-    { key: "active", label: "Active Stocks", value: stats.active, icon: icons.active, tone: "text-profit bg-profit-soft", glow: "hover:border-profit/40 hover:shadow-[0_10px_30px_rgb(0_0_0/0.35),0_0_22px_rgb(52_211_153/0.12)]" },
+    { key: "total", label: "Total Stocks", value: stats.total, icon: icons.total, tone: "text-brand bg-brand-soft", glow: "hover:border-brand/40 hover:shadow-[0_10px_30px_rgb(0_0_0/0.35),0_0_22px_rgb(214_40_40/0.12)]" },
+    { key: "active", label: "Active Stocks", value: stats.active, icon: icons.active, tone: "text-profit bg-profit-soft", glow: "hover:border-profit/40 hover:shadow-[0_10px_30px_rgb(0_0_0/0.35),0_0_22px_rgb(22_199_132/0.12)]" },
     { key: "sectors", label: "Sectors", value: stats.sectors, icon: icons.sectors, tone: "text-info bg-info-soft", glow: "hover:border-info/40 hover:shadow-[0_10px_30px_rgb(0_0_0/0.35),0_0_22px_rgb(96_165_250/0.12)]" },
     { key: "exchanges", label: "Exchanges", value: stats.exchanges, icon: icons.exchanges, tone: "text-warn bg-warn-soft", glow: "hover:border-warn/40 hover:shadow-[0_10px_30px_rgb(0_0_0/0.35),0_0_22px_rgb(251_191_36/0.10)]" },
   ];

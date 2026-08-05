@@ -81,14 +81,14 @@ function ChatContent() {
       {/* subtle AI workspace atmosphere */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 -top-6 -z-10 h-[380px] bg-[radial-gradient(55%_55%_at_50%_0%,rgb(167_139_250/0.05),transparent_70%)]"
+        className="pointer-events-none absolute inset-x-0 -top-6 -z-10 h-[380px] bg-[radial-gradient(55%_55%_at_50%_0%,rgb(214_40_40/0.08),transparent_70%)]"
       />
 
       <div className="flex w-full max-w-4xl items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <span
             aria-hidden
-            className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-ai-strong to-ai text-ai-ink shadow-[0_0_18px_rgb(139_92_246/0.3)] ring-1 ring-ai/40"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-brand to-brand-strong text-brand-ink shadow-[0_0_18px_rgb(214_40_40/0.35)] ring-1 ring-brand/40"
           >
             <SparkIcon className="h-4.5 w-4.5" />
           </span>

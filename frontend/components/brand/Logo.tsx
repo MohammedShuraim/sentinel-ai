@@ -30,7 +30,7 @@ export function Logo({
       <span
         aria-hidden
         className={cn(
-          "grid shrink-0 place-items-center bg-gradient-to-br from-brand to-brand-strong shadow-glow",
+          "grid shrink-0 place-items-center bg-gradient-to-br from-brand to-brand-strong shadow-glow ring-1 ring-brand/40",
           markSizes[size],
         )}
       >
@@ -38,7 +38,7 @@ export function Logo({
           viewBox="0 0 24 24"
           className="h-3/5 w-3/5"
           fill="none"
-          stroke="#04150e"
+          stroke="#ffffff"
           strokeWidth={2.4}
           strokeLinecap="round"
           strokeLinejoin="round"

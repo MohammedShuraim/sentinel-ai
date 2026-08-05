@@ -86,7 +86,7 @@ export function HoldingDrawer({
           <button
             type="button"
             onClick={onAnalyze}
-            className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-ai-strong to-ai text-sm font-medium text-ai-ink shadow-[0_0_0_1px_rgb(167_139_250/0.3),0_0_20px_rgb(139_92_246/0.25)] transition-all hover:brightness-110 hover:shadow-[0_0_0_1px_rgb(167_139_250/0.4),0_0_30px_rgb(139_92_246/0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ai/50 active:scale-[0.98]"
+            className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-ai-strong to-ai text-sm font-medium text-ai-ink shadow-[0_0_0_1px_rgb(214_40_40/0.3),0_0_20px_rgb(214_40_40/0.25)] transition-all hover:brightness-110 hover:shadow-[0_0_0_1px_rgb(214_40_40/0.4),0_0_30px_rgb(214_40_40/0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ai/50 active:scale-[0.98]"
           >
             <SparkleIcon className="h-4 w-4" />
             Analyze with AI

@@ -28,7 +28,7 @@ const SourceCard = memo(function SourceCard({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25, delay: index * 0.05, ease: EASE_OUT }}
-      className="group rounded-xl border border-line bg-elevated/60 px-3.5 py-3 transition-[border-color,box-shadow] duration-200 hover:border-ai/30 hover:shadow-[0_0_18px_rgb(139_92_246/0.08)]"
+      className="group rounded-xl border border-line bg-elevated/60 px-3.5 py-3 transition-[border-color,box-shadow] duration-200 hover:border-ai/30 hover:shadow-[0_0_18px_rgb(214_40_40/0.08)]"
     >
       <div className="flex flex-wrap items-center gap-2">
         <Badge variant="neutral" className="shrink-0 capitalize">
@@ -105,7 +105,7 @@ export const SourceCards = memo(function SourceCards({
         type="button"
         onClick={() => setOpen((current) => !current)}
         aria-expanded={open}
-        className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-2.5 py-1.5 text-[11px] font-medium uppercase tracking-widest text-fg-subtle transition-[border-color,color,box-shadow] duration-200 hover:border-ai/40 hover:text-ai hover:shadow-[0_0_12px_rgb(139_92_246/0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ai/40 active:scale-[0.97]"
+        className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-2.5 py-1.5 text-[11px] font-medium uppercase tracking-widest text-fg-subtle transition-[border-color,color,box-shadow] duration-200 hover:border-ai/40 hover:text-ai hover:shadow-[0_0_12px_rgb(214_40_40/0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ai/40 active:scale-[0.97]"
       >
         <svg
           aria-hidden

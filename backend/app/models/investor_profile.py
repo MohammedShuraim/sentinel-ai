@@ -48,6 +48,26 @@ class InvestorProfile(Base):
         nullable=True,
     )
 
+    investment_horizon: Mapped[str | None] = mapped_column(
+        String(50),
+        nullable=True,
+    )
+
+    investment_budget: Mapped[str | None] = mapped_column(
+        String(50),
+        nullable=True,
+    )
+
+    investment_goals: Mapped[str | None] = mapped_column(
+        String(100),
+        nullable=True,
+    )
+
+    experience_level: Mapped[str | None] = mapped_column(
+        String(50),
+        nullable=True,
+    )
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,

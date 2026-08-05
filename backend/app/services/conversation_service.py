@@ -28,6 +28,9 @@ from app.services.preference_extraction_service import (
 )
 from app.services.preference_parser_service import PreferenceParserService
 from app.services.providers.failover_provider import ProviderUnavailableError
+from app.services.user_context_formatter_service import (
+    UserContextFormatterService,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +55,7 @@ class ConversationService:
         preference_parser_service: PreferenceParserService,
         investor_profile_service: InvestorProfileService,
         profile_formatter: InvestorProfileFormatterService,
+        user_context_formatter: UserContextFormatterService | None = None,
     ):
         """Create the conversation service with injected dependencies."""
         self.agent_graph = agent_graph
@@ -60,6 +64,9 @@ class ConversationService:
         self.preference_parser_service = preference_parser_service
         self.investor_profile_service = investor_profile_service
         self.profile_formatter = profile_formatter
+        self.user_context_formatter = (
+            user_context_formatter or UserContextFormatterService()
+        )
 
     def chat(
         self,
@@ -261,4 +268,11 @@ class ConversationService:
             logger.info("Preference extraction: 0 ms (skipped)")
 
         profile_text = self.profile_formatter.format_profile(profile)
-        return conversation, history, profile_text
+        user_context = self.user_context_formatter.format_user_context(
+            db,
+            user_id,
+        )
+        combined_profile = (
+            f"{profile_text}\n\nLive Investment Context:\n\n{user_context}"
+        )
+        return conversation, history, combined_profile

@@ -110,7 +110,7 @@ function StocksContent() {
       {/* faint market atmosphere */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 -top-6 -z-10 h-[380px] bg-[radial-gradient(56%_58%_at_50%_0%,rgb(52_211_153/0.05),transparent_70%)]"
+        className="pointer-events-none absolute inset-x-0 -top-6 -z-10 h-[380px] bg-[radial-gradient(56%_58%_at_50%_0%,rgb(214_40_40/0.05),transparent_70%)]"
       />
       <div
         aria-hidden

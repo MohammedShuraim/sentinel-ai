@@ -8,14 +8,14 @@ import { formatINR } from "@/lib/format";
 import type { PortfolioRead, StockRead } from "@/lib/api/types";
 
 const PALETTE = [
-  "#34d399",
-  "#60a5fa",
-  "#fbbf24",
-  "#fb7185",
-  "#a78bfa",
-  "#5eead4",
-  "#f472b6",
-  "#94a3b8",
+  "#D62828",
+  "#E63946",
+  "#F4B400",
+  "#16C784",
+  "#A7A7A7",
+  "#8B3A3A",
+  "#C4C4C4",
+  "#6B6B6B",
 ];
 
 interface AllocationChartProps {
@@ -45,7 +45,7 @@ export function AllocationChart({ holdings, stocksById }: AllocationChartProps) 
     <Card className="relative flex h-full flex-col gap-5 overflow-hidden">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(80%_60%_at_50%_0%,rgb(52_211_153/0.04),transparent_65%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(80%_60%_at_50%_0%,rgb(214_40_40/0.06),transparent_65%)]"
       />
 
       {/* stacked allocation bar: segments cascade in left to right */}

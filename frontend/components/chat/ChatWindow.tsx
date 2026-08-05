@@ -16,7 +16,7 @@ function AiAvatar() {
   return (
     <span
       aria-hidden
-      className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-gradient-to-br from-ai-strong to-ai text-ai-ink shadow-[0_0_14px_rgb(139_92_246/0.3)] ring-1 ring-ai/40"
+      className="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-brand to-brand-strong text-brand-ink shadow-[0_0_16px_rgb(214_40_40/0.35)] ring-1 ring-brand/40"
     >
       <SparkIcon className="h-4 w-4" />
     </span>
@@ -39,7 +39,7 @@ const MessageItem = memo(function MessageItem({
   if (message.role === "user") {
     return (
       <li className="flex justify-end">
-        <div className="max-w-[85%] rounded-2xl rounded-br-md border border-brand/30 bg-gradient-to-br from-brand/25 to-brand/10 px-4.5 py-3 text-sm leading-relaxed text-fg shadow-[0_0_22px_rgb(52_211_153/0.12)] sm:max-w-[75%]">
+        <div className="max-w-[85%] rounded-2xl rounded-br-md border border-line bg-overlay px-4.5 py-3 text-sm leading-relaxed text-fg shadow-[0_8px_24px_rgb(0_0_0/0.35)] sm:max-w-[75%]">
           <p className="whitespace-pre-wrap">{message.content}</p>
         </div>
       </li>
@@ -50,7 +50,7 @@ const MessageItem = memo(function MessageItem({
     <li className="flex items-start gap-3">
       <AiAvatar />
       <div className="min-w-0 flex-1">
-        <div className="rounded-2xl rounded-tl-md border border-line/60 bg-surface/70 px-5 py-4 shadow-[0_8px_24px_rgb(0_0_0/0.25)] backdrop-blur-md">
+        <div className="rounded-2xl rounded-tl-md border border-line/70 bg-elevated/90 px-5 py-4 shadow-[0_8px_24px_rgb(0_0_0/0.35)] backdrop-blur-md ring-1 ring-brand/10">
           <div className={streaming && isLastAssistant ? "streaming-cursor" : undefined}>
             <Markdown content={message.content} />
           </div>

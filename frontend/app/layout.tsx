@@ -1,12 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Outfit, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/providers/ToastProvider";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 
-const inter = Inter({
-  variable: "--font-inter",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
   display: "swap",
 });
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#090b0f",
+  themeColor: "#0B0B0B",
   width: "device-width",
   initialScale: 1,
 };
@@ -63,7 +63,7 @@ export default function RootLayout({
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`${inter.variable} ${spaceGrotesk.variable} h-full antialiased`}
+      className={`${outfit.variable} ${spaceGrotesk.variable} h-full antialiased`}
     >
       <body className="min-h-full">
         <ToastProvider>

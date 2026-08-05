@@ -9,6 +9,10 @@ class InvestorProfileRead(BaseModel):
     investment_style: str | None = None
     preferred_market_cap: str | None = None
     dividend_preference: bool | None = None
+    investment_horizon: str | None = None
+    investment_budget: str | None = None
+    investment_goals: str | None = None
+    experience_level: str | None = None
     has_preferences: bool
 
     model_config = ConfigDict(from_attributes=True)
@@ -20,3 +24,7 @@ class InvestorProfileUpdate(BaseModel):
     investment_style: str | None = None
     preferred_market_cap: str | None = None
     dividend_preference: bool | None = None
+    investment_horizon: str | None = None
+    investment_budget: str | None = None
+    investment_goals: str | None = None
+    experience_level: str | None = None

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Drawer } from "@/components/ui/Drawer";
 import { ConfidenceBar } from "@/components/common/ConfidenceBar";
 import { SparkleIcon } from "@/components/common/icons";
+import { formatINR } from "@/lib/format";
 import {
   MAX_RECOMMENDATION_SCORE,
   confidenceForScore,
@@ -57,7 +58,7 @@ function SourceCard({ source, index }: { source: RetrievedDocument; index: numbe
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <li className="rounded-xl border border-line bg-elevated px-3.5 py-3 transition-[border-color,box-shadow] duration-200 hover:border-ai/30 hover:shadow-[0_0_16px_rgb(139_92_246/0.08)]">
+    <li className="rounded-xl border border-line bg-elevated px-3.5 py-3 transition-[border-color,box-shadow] duration-200 hover:border-ai/30 hover:shadow-[0_0_16px_rgb(214_40_40/0.08)]">
       <div className="mb-1 flex items-center justify-between gap-2">
         <span className="truncate text-xs font-medium text-fg">
           {source.title ?? source.source_type.replace(/_/g, " ")}
@@ -111,7 +112,9 @@ export function RecommendationDetailsDrawer({
   onWatchlist,
 }: RecommendationDetailsDrawerProps) {
   const label = item ? labelForScore(item.score) : null;
-  const confidence = item ? confidenceForScore(item.score) : 0;
+  const confidence = item
+    ? (item.confidence ?? confidenceForScore(item.score))
+    : 0;
 
   return (
     <Drawer
@@ -132,12 +135,15 @@ export function RecommendationDetailsDrawer({
               <Badge variant="brand" className="tnum">
                 {item.ticker}
               </Badge>
-              {stock ? <Badge variant="neutral">{stock.sector}</Badge> : null}
+              {(item.sector ?? stock?.sector) ? (
+                <Badge variant="neutral">{item.sector ?? stock?.sector}</Badge>
+              ) : null}
               {label ? (
                 <Badge variant={labelVariant(label)} dot>
                   {label}
                 </Badge>
               ) : null}
+              {item.already_owned ? <Badge variant="warn">Owned</Badge> : null}
               {watched ? <Badge variant="brand">Watching</Badge> : null}
             </div>
           </div>
@@ -166,7 +172,7 @@ export function RecommendationDetailsDrawer({
             <button
               type="button"
               onClick={onAnalyze}
-              className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-ai-strong to-ai text-sm font-medium text-ai-ink shadow-[0_0_0_1px_rgb(167_139_250/0.3),0_0_20px_rgb(139_92_246/0.25)] transition-all hover:brightness-110 hover:shadow-[0_0_0_1px_rgb(167_139_250/0.4),0_0_30px_rgb(139_92_246/0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ai/50 active:scale-[0.98]"
+              className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-ai-strong to-ai text-sm font-medium text-ai-ink shadow-[0_0_0_1px_rgb(214_40_40/0.3),0_0_20px_rgb(214_40_40/0.25)] transition-all hover:brightness-110 hover:shadow-[0_0_0_1px_rgb(214_40_40/0.4),0_0_30px_rgb(214_40_40/0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ai/50 active:scale-[0.98]"
             >
               {sparkIcon}
               Analyze with AI
@@ -200,6 +206,20 @@ export function RecommendationDetailsDrawer({
                   "Not available"
                 )}
               </Row>
+              <Row label="Current Price">
+                {item.current_price != null
+                  ? formatINR(item.current_price)
+                  : "Not available"}
+              </Row>
+              <Row label="Expected Return">
+                {item.expected_return_pct != null
+                  ? `~${item.expected_return_pct.toFixed(0)}% (${item.expected_return_label ?? "AI estimate"})`
+                  : item.expected_return_label ?? "Not available"}
+              </Row>
+              <Row label="Risk Level">{item.risk_level ?? "Not available"}</Row>
+              <Row label="Time Horizon">
+                {item.time_horizon ?? "Not available"}
+              </Row>
             </dl>
           </section>
 
@@ -208,7 +228,9 @@ export function RecommendationDetailsDrawer({
             <dl className="divide-y divide-line/60">
               <Row label="Ticker">{item.ticker}</Row>
               <Row label="Company">{item.company_name}</Row>
-              <Row label="Sector">{stock?.sector ?? "Not available"}</Row>
+              <Row label="Sector">
+                {item.sector ?? stock?.sector ?? "Not available"}
+              </Row>
               <Row label="Industry">{stock?.industry ?? "Not available"}</Row>
               <Row label="Exchange">{stock?.exchange ?? "Not available"}</Row>
             </dl>

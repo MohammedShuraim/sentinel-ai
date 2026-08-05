@@ -61,21 +61,32 @@ export function MarketOverview({
                   href={article.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex flex-col gap-2 px-5 py-4 transition-colors duration-200 hover:bg-white/[0.03]"
+                  className="group flex items-start gap-3.5 px-5 py-4 transition-colors duration-200 hover:bg-white/[0.03]"
                 >
-                  <p className="line-clamp-2 text-sm font-medium leading-snug text-fg transition-[color,transform] duration-200 group-hover:translate-x-0.5 group-hover:text-brand">
-                    {article.title}
-                  </p>
-                  <div className="flex items-center gap-2">
-                    {stock ? (
-                      <Badge variant="brand" className="tnum">
-                        {stock.ticker}
-                      </Badge>
-                    ) : null}
-                    <Badge variant="neutral">{article.source}</Badge>
-                    <span className="tnum text-xs text-fg-subtle">
-                      {formatDateShort(article.published_at)}
-                    </span>
+                  <span
+                    aria-hidden
+                    className="mt-0.5 grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-line bg-surface text-[11px] font-semibold uppercase tracking-wide text-brand"
+                  >
+                    {(stock?.ticker ?? article.source).slice(0, 2)}
+                  </span>
+                  <div className="flex min-w-0 flex-1 flex-col gap-2">
+                    <p className="line-clamp-2 text-sm font-medium leading-snug text-fg transition-[color,transform] duration-200 group-hover:translate-x-0.5 group-hover:text-brand">
+                      {article.title}
+                    </p>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {stock ? (
+                        <Badge variant="brand" className="tnum">
+                          {stock.ticker}
+                        </Badge>
+                      ) : null}
+                      <Badge variant="neutral">{article.source}</Badge>
+                      <span className="tnum text-xs text-fg-subtle">
+                        {formatDateShort(article.published_at)}
+                      </span>
+                      <span className="ml-auto text-xs font-medium text-brand transition-colors group-hover:text-brand-strong">
+                        Read Original →
+                      </span>
+                    </div>
                   </div>
                 </a>
               </motion.li>

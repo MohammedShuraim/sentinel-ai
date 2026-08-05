@@ -57,7 +57,7 @@ export function RecommendationSummary({
       format: (v: number) => String(Math.round(v)),
       tone: "text-profit",
       iconTone: "text-profit bg-profit-soft",
-      glow: "hover:border-profit/40 hover:shadow-[0_10px_30px_rgb(0_0_0/0.35),0_0_22px_rgb(52_211_153/0.14)]",
+      glow: "hover:border-profit/40 hover:shadow-[0_10px_30px_rgb(0_0_0/0.35),0_0_22px_rgb(22_199_132/0.14)]",
       icon: (
         <>
           <path d="m4 16 5.5-6 4 3.5L20 7" />
@@ -72,7 +72,7 @@ export function RecommendationSummary({
       format: (v: number) => String(Math.round(v)),
       tone: "text-brand",
       iconTone: "text-brand bg-brand-soft",
-      glow: "hover:border-brand/40 hover:shadow-[0_10px_30px_rgb(0_0_0/0.35),0_0_22px_rgb(52_211_153/0.12)]",
+      glow: "hover:border-brand/40 hover:shadow-[0_10px_30px_rgb(0_0_0/0.35),0_0_22px_rgb(214_40_40/0.12)]",
       icon: <path d="m4 15 5-4.5 4 3 7-7.5" />,
     },
     {
@@ -82,7 +82,7 @@ export function RecommendationSummary({
       format: (v: number) => `${Math.round(v)}%`,
       tone: "text-fg",
       iconTone: "text-ai bg-ai-soft",
-      glow: "hover:border-ai/40 hover:shadow-[0_10px_30px_rgb(0_0_0/0.35),0_0_22px_rgb(139_92_246/0.16)]",
+      glow: "hover:border-ai/40 hover:shadow-[0_10px_30px_rgb(0_0_0/0.35),0_0_22px_rgb(214_40_40/0.16)]",
       icon: (
         <>
           <path d="M12 20a8 8 0 1 0-8-8" />

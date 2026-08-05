@@ -27,14 +27,14 @@ export default function HomePage() {
       animate="show"
       className="relative flex flex-col gap-6"
     >
-      {/* subtle command-center depth: mint overhead, AI purple at the edge */}
+      {/* subtle command-center depth: soft red overhead */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 -top-6 -z-10 h-[420px] bg-[radial-gradient(58%_60%_at_50%_0%,rgb(52_211_153/0.05),transparent_70%)]"
+        className="pointer-events-none absolute inset-x-0 -top-6 -z-10 h-[420px] bg-[radial-gradient(58%_60%_at_50%_0%,rgb(214_40_40/0.07),transparent_70%)]"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 -top-6 -z-10 h-[420px] bg-[radial-gradient(34%_52%_at_92%_18%,rgb(167_139_250/0.04),transparent_70%)]"
+        className="pointer-events-none absolute inset-x-0 -top-6 -z-10 h-[420px] bg-[radial-gradient(34%_52%_at_92%_18%,rgb(214_40_40/0.04),transparent_70%)]"
       />
       <Hero
         fullName={user?.full_name ?? ""}

@@ -159,9 +159,9 @@ export function MarketChart({ className }: { className?: string }) {
       >
         <defs>
           <linearGradient id="market-area-fill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#34d399" stopOpacity="0.22" />
-            <stop offset="55%" stopColor="#34d399" stopOpacity="0.06" />
-            <stop offset="100%" stopColor="#34d399" stopOpacity="0" />
+            <stop offset="0%" stopColor="#D62828" stopOpacity="0.28" />
+            <stop offset="55%" stopColor="#D62828" stopOpacity="0.08" />
+            <stop offset="100%" stopColor="#D62828" stopOpacity="0" />
           </linearGradient>
         </defs>
 
@@ -170,7 +170,7 @@ export function MarketChart({ className }: { className?: string }) {
           d={line}
           animate={{ d: line }}
           transition={drawTransition}
-          stroke="#34d399"
+          stroke="#D62828"
           strokeWidth={7}
           strokeLinecap="round"
           className="opacity-25 blur-[6px]"
@@ -187,7 +187,7 @@ export function MarketChart({ className }: { className?: string }) {
         {/* faint moving-average trend (tablet/desktop only) */}
         <motion.path
           d={average}
-          stroke="#98a3b3"
+          stroke="#A7A7A7"
           strokeWidth={1.25}
           strokeDasharray="2 7"
           strokeLinecap="round"
@@ -200,10 +200,10 @@ export function MarketChart({ className }: { className?: string }) {
         {/* main price line */}
         <motion.path
           d={line}
-          stroke="#34d399"
+          stroke="#E63946"
           strokeWidth={2}
           strokeLinecap="round"
-          className="drop-shadow-[0_0_10px_rgb(52_211_153/0.45)]"
+          className="drop-shadow-[0_0_10px_rgb(214_40_40/0.45)]"
           initial={drawInitial}
           animate={{ pathLength: 1, d: line }}
           transition={drawTransition}

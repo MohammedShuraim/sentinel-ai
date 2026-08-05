@@ -29,15 +29,15 @@ export function PortfolioEmptyState() {
       variants={staggerContainer}
       initial="hidden"
       animate="show"
-      className="relative overflow-hidden rounded-2xl border border-line/80 bg-surface/70 px-5 py-10 shadow-[0_0_0_1px_rgb(167_139_250/0.06)] backdrop-blur-xl sm:px-8 sm:py-12"
+      className="relative overflow-hidden rounded-2xl border border-line/80 bg-surface/70 px-5 py-10 shadow-[0_0_0_1px_rgb(214_40_40/0.06)] backdrop-blur-xl sm:px-8 sm:py-12"
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(55%_50%_at_50%_0%,rgb(52_211_153/0.08),transparent_65%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(55%_50%_at_50%_0%,rgb(214_40_40/0.08),transparent_65%)]"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(40%_40%_at_85%_20%,rgb(167_139_250/0.08),transparent_70%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(40%_40%_at_85%_20%,rgb(214_40_40/0.08),transparent_70%)]"
       />
 
       <div className="relative mx-auto flex max-w-2xl flex-col items-center gap-8 text-center">
@@ -110,8 +110,8 @@ export function PortfolioEmptyState() {
                   aria-hidden
                   className={
                     accent === "brand"
-                      ? "relative z-[1] mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-brand shadow-[0_0_12px_rgb(52_211_153/0.55)]"
-                      : "relative z-[1] mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-ai shadow-[0_0_12px_rgb(139_92_246/0.55)]"
+                      ? "relative z-[1] mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-brand shadow-[0_0_12px_rgb(214_40_40/0.55)]"
+                      : "relative z-[1] mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-ai shadow-[0_0_12px_rgb(214_40_40/0.55)]"
                   }
                 />
                 <div className="flex min-w-0 flex-col items-start gap-0.5 pt-0 text-left">

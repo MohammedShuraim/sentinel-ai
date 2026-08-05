@@ -29,6 +29,9 @@ from app.services.providers.sentence_transformer_provider import (
 )
 from app.services.rag_service import RAGService
 from app.services.retriever_service import RetrieverService
+from app.services.user_context_formatter_service import (
+    UserContextFormatterService,
+)
 
 embedding_provider = SentenceTransformerProvider()
 retriever_service = RetrieverService(embedding_provider)
@@ -54,6 +57,8 @@ investor_profile_service = InvestorProfileService(
     profile_embedding_service=investor_profile_embedding_service,
 )
 
+user_context_formatter_service = UserContextFormatterService()
+
 conversation_service = ConversationService(
     agent_graph=agent_graph,
     formatter=conversation_formatter_service,
@@ -61,6 +66,7 @@ conversation_service = ConversationService(
     preference_parser_service=preference_parser_service,
     investor_profile_service=investor_profile_service,
     profile_formatter=investor_profile_formatter_service,
+    user_context_formatter=user_context_formatter_service,
 )
 
 

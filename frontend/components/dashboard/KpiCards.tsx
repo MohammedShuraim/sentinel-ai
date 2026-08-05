@@ -60,7 +60,7 @@ export function KpiCards({ summary, watchlistCount, loading }: KpiCardsProps) {
       format: formatINR,
       icon: icons.invested,
       tone: "text-brand bg-brand-soft",
-      glow: "hover:border-brand/40 hover:shadow-[0_10px_30px_rgb(0_0_0/0.35),0_0_22px_rgb(52_211_153/0.12)]",
+      glow: "hover:border-brand/40 hover:shadow-[0_10px_30px_rgb(0_0_0/0.35),0_0_22px_rgb(214_40_40/0.12)]",
     },
     {
       key: "holdings",

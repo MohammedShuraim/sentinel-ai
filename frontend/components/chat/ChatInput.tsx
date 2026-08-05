@@ -49,7 +49,7 @@ export function ChatInput({ sending, onSend }: ChatInputProps) {
         event.preventDefault();
         submit();
       }}
-      className="flex items-end gap-2 rounded-2xl border border-line bg-surface/70 p-2 shadow-[0_12px_32px_rgb(0_0_0/0.3)] backdrop-blur-md transition-[border-color,box-shadow] duration-200 focus-within:border-ai/50 focus-within:shadow-[0_12px_32px_rgb(0_0_0/0.3),0_0_24px_rgb(139_92_246/0.12)] focus-within:ring-2 focus-within:ring-ai/20"
+      className="flex items-end gap-2 rounded-2xl border border-line bg-elevated/90 p-2 shadow-[0_12px_32px_rgb(0_0_0/0.4)] backdrop-blur-md transition-[border-color,box-shadow] duration-200 focus-within:border-brand/55 focus-within:shadow-[0_12px_32px_rgb(0_0_0/0.4),0_0_24px_rgb(214_40_40/0.16)] focus-within:ring-2 focus-within:ring-brand/25"
     >
       <textarea
         ref={textareaRef}
@@ -73,7 +73,7 @@ export function ChatInput({ sending, onSend }: ChatInputProps) {
         type="submit"
         disabled={sending || value.trim().length === 0}
         aria-label="Send message"
-        className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-ai-strong to-ai text-ai-ink shadow-[0_0_0_1px_rgb(167_139_250/0.3),0_0_16px_rgb(139_92_246/0.2)] transition-all hover:brightness-110 hover:shadow-[0_0_0_1px_rgb(167_139_250/0.4),0_0_24px_rgb(139_92_246/0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ai/50 active:scale-95 disabled:opacity-40 disabled:shadow-none"
+        className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-brand to-brand-strong text-brand-ink shadow-[0_0_0_1px_rgb(214_40_40/0.35),0_0_16px_rgb(214_40_40/0.28)] transition-all hover:brightness-110 hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 active:scale-95 disabled:opacity-40 disabled:shadow-none"
       >
         <svg
           aria-hidden

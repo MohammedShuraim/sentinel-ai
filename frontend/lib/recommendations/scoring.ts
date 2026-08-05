@@ -51,10 +51,10 @@ export function labelVariant(label: RecommendationLabel): BadgeVariant {
 }
 
 export const LABEL_ACCENTS: Record<RecommendationLabel, string> = {
-  "Strong Buy": "#10b981",
-  Buy: "#34d399",
-  Hold: "#fbbf24",
-  Sell: "#fb7185",
+  "Strong Buy": "#16C784",
+  Buy: "#16C784",
+  Hold: "#F4B400",
+  Sell: "#E63946",
 };
 
 export function labelRank(label: RecommendationLabel): number {

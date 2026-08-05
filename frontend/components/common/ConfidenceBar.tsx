@@ -10,7 +10,7 @@ interface ConfidenceBarProps {
   className?: string;
 }
 
-/** Animated AI-confidence meter with the mint → purple brand gradient. */
+/** Animated AI-confidence meter with the deep-red brand gradient. */
 export function ConfidenceBar({ value, className }: ConfidenceBarProps) {
   const reduceMotion = useReducedMotion();
   const pct = Math.min(100, Math.max(0, value));

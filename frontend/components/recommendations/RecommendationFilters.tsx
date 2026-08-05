@@ -43,7 +43,7 @@ const baseChip =
 const idleChip =
   "border-line bg-surface text-fg-muted hover:border-line-strong hover:text-fg";
 const activeChip =
-  "border-transparent text-brand shadow-[0_0_14px_rgb(52_211_153/0.15)]";
+  "border-transparent text-brand shadow-[0_0_14px_rgb(214_40_40/0.15)]";
 
 function Chip({
   active,

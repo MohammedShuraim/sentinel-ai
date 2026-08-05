@@ -15,12 +15,12 @@ export function StockCard({
   return (
     <Card
       interactive
-      className="group relative flex h-full flex-col gap-4 overflow-hidden p-5 transition-[border-color,box-shadow,transform] duration-200 hover:border-brand/35 hover:shadow-[0_12px_34px_rgb(0_0_0/0.38),0_0_24px_rgb(52_211_153/0.10)]"
+      className="group relative flex h-full flex-col gap-4 overflow-hidden p-5 transition-[border-color,box-shadow,transform] duration-200 hover:border-brand/35 hover:shadow-[0_12px_34px_rgb(0_0_0/0.38),0_0_24px_rgb(214_40_40/0.10)]"
     >
       {/* soft radial highlight on hover */}
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(85%_60%_at_85%_0%,rgb(52_211_153/0.06),transparent_60%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(85%_60%_at_85%_0%,rgb(214_40_40/0.06),transparent_60%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
       />
 
       <div className="relative flex items-start justify-between gap-3">

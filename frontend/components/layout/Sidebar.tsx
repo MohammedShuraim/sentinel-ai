@@ -109,7 +109,7 @@ export function Sidebar({
         transition={
           reduceMotion ? { duration: 0.15 } : sidebarSlideTransition
         }
-        className="fixed inset-y-0 left-0 z-50 flex w-sidebar flex-col border-r border-line bg-surface"
+        className="fixed inset-y-0 left-0 z-50 flex w-sidebar flex-col border-r border-line bg-bg"
         aria-label="Primary"
       >
         <div className="flex h-topnav shrink-0 items-center border-b border-line px-5">
@@ -156,7 +156,7 @@ export function Sidebar({
                     href={item.href}
                     onClick={onClose}
                     className={cn(
-                      "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors duration-200 active:scale-[0.98]",
+                      "group relative flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium transition-colors duration-200 active:scale-[0.98]",
                       active
                         ? "text-fg"
                         : "text-fg-muted hover:text-fg",
@@ -169,28 +169,18 @@ export function Sidebar({
                         transition={activePillTransition(
                           Boolean(reduceMotion),
                         )}
-                        className="absolute inset-0 rounded-xl bg-white/[0.06]"
+                        className="absolute inset-0 rounded-2xl bg-brand shadow-[0_0_24px_rgb(214_40_40/0.28)]"
                       />
                     ) : null}
                     <span
                       aria-hidden
-                      className="absolute inset-0 rounded-xl transition-colors duration-200 group-hover:bg-white/[0.04]"
+                      className="absolute inset-0 rounded-2xl transition-colors duration-200 group-hover:bg-white/[0.04]"
                     />
-                    {active ? (
-                      <motion.span
-                        aria-hidden
-                        layoutId="sidebar-active-bar"
-                        transition={activePillTransition(
-                          Boolean(reduceMotion),
-                        )}
-                        className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-brand shadow-glow"
-                      />
-                    ) : null}
                     <span
                       className={cn(
                         "relative shrink-0 transition-[color,transform] duration-200",
                         active
-                          ? "scale-105 text-brand"
+                          ? "scale-105 text-fg"
                           : "text-fg-subtle group-hover:scale-105 group-hover:text-fg-muted",
                       )}
                     >

@@ -32,8 +32,24 @@ const MARKET_CAP_OPTIONS = [
   "Small Cap",
   "No Preference",
 ] as const;
+const EXPERIENCE_OPTIONS = ["Beginner", "Intermediate", "Experienced"] as const;
+const HORIZON_OPTIONS = ["Short-term", "Medium-term", "Long-term"] as const;
+const BUDGET_OPTIONS = [
+  "Under ₹50,000",
+  "₹50,000 – ₹2L",
+  "₹2L – ₹10L",
+  "Above ₹10L",
+] as const;
+const GOAL_OPTIONS = [
+  "Wealth Creation",
+  "Regular Income",
+  "Capital Preservation",
+  "Learning & Exploration",
+] as const;
 
-const TOTAL_STEPS = 7;
+/** Content steps 1–7 + saving step 8 */
+const TOTAL_STEPS = 8;
+const CONTENT_STEPS = 7;
 
 export interface OnboardingWizardProps {
   open: boolean;
@@ -54,6 +70,10 @@ export function OnboardingWizard({
   const [style, setStyle] = useState<string | null>(null);
   const [sectors, setSectors] = useState<string[]>([]);
   const [marketCap, setMarketCap] = useState<string | null>(null);
+  const [experience, setExperience] = useState<string | null>(null);
+  const [horizon, setHorizon] = useState<string | null>(null);
+  const [budget, setBudget] = useState<string | null>(null);
+  const [goals, setGoals] = useState<string | null>(null);
   const [dividend, setDividend] = useState(false);
   const [saving, setSaving] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -132,14 +152,31 @@ export function OnboardingWizard({
     if (step === 2) return risk !== null;
     if (step === 3) return style !== null;
     if (step === 5) return marketCap !== null;
+    if (step === 6) {
+      return (
+        experience !== null &&
+        horizon !== null &&
+        budget !== null &&
+        goals !== null
+      );
+    }
     return true;
   }
 
   async function finish() {
-    if (saving || !risk || !style || !marketCap) {
+    if (
+      saving ||
+      !risk ||
+      !style ||
+      !marketCap ||
+      !experience ||
+      !horizon ||
+      !budget ||
+      !goals
+    ) {
       return;
     }
-    setStep(7);
+    setStep(8);
     setSaving(true);
     try {
       const payload: {
@@ -148,11 +185,19 @@ export function OnboardingWizard({
         preferred_sectors: string[];
         dividend_preference: boolean;
         preferred_market_cap?: string;
+        experience_level: string;
+        investment_horizon: string;
+        investment_budget: string;
+        investment_goals: string;
       } = {
         risk_tolerance: risk,
         investment_style: style,
         preferred_sectors: sectors,
         dividend_preference: dividend,
+        experience_level: experience,
+        investment_horizon: horizon,
+        investment_budget: budget,
+        investment_goals: goals,
       };
       if (marketCap !== "No Preference") {
         payload.preferred_market_cap = marketCap;
@@ -162,7 +207,7 @@ export function OnboardingWizard({
       dispatchProfileReady();
       onComplete();
     } catch (error) {
-      setStep(6);
+      setStep(7);
       onErrorToast(getApiErrorMessage(error));
     } finally {
       setSaving(false);
@@ -170,7 +215,7 @@ export function OnboardingWizard({
   }
 
   function goNext() {
-    if (step === 6) {
+    if (step === 7) {
       void finish();
       return;
     }
@@ -187,7 +232,7 @@ export function OnboardingWizard({
     setStep((current) => current - 1);
   }
 
-  const progress = Math.min(step, 6) / 6;
+  const progress = Math.min(step, CONTENT_STEPS) / CONTENT_STEPS;
 
   if (!mounted || !open) {
     return null;
@@ -227,7 +272,7 @@ export function OnboardingWizard({
       >
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-[radial-gradient(60%_80%_at_50%_0%,rgb(167_139_250/0.14),transparent_70%)]"
+          className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-[radial-gradient(60%_80%_at_50%_0%,rgb(214_40_40/0.14),transparent_70%)]"
         />
         <div
           aria-hidden
@@ -240,15 +285,15 @@ export function OnboardingWizard({
             <div className="flex items-center justify-between text-[11px] text-fg-subtle">
               <span>Setup</span>
               <span className="tnum">
-                {Math.min(step, 6)} / 6
+                {Math.min(step, CONTENT_STEPS)} / {CONTENT_STEPS}
               </span>
             </div>
             <div
               className="h-1 overflow-hidden rounded-full bg-elevated"
               role="progressbar"
               aria-valuemin={1}
-              aria-valuemax={6}
-              aria-valuenow={Math.min(step, 6)}
+              aria-valuemax={CONTENT_STEPS}
+              aria-valuenow={Math.min(step, CONTENT_STEPS)}
               aria-label="Onboarding progress"
             >
               <motion.div
@@ -316,18 +361,31 @@ export function OnboardingWizard({
                 />
               )}
               {step === 6 && (
+                <GoalsStep
+                  titleId={titleId}
+                  experience={experience}
+                  horizon={horizon}
+                  budget={budget}
+                  goals={goals}
+                  onExperience={setExperience}
+                  onHorizon={setHorizon}
+                  onBudget={setBudget}
+                  onGoals={setGoals}
+                />
+              )}
+              {step === 7 && (
                 <DividendStep
                   titleId={titleId}
                   value={dividend}
                   onChange={setDividend}
                 />
               )}
-              {step === 7 && <SavingStep titleId={titleId} />}
+              {step === 8 && <SavingStep titleId={titleId} />}
             </motion.div>
           </AnimatePresence>
         </div>
 
-        {step < 7 && (
+        {step < 8 && (
           <div className="relative flex items-center justify-between gap-3 border-t border-line/60 px-5 py-4 sm:px-6">
             <Button
               type="button"
@@ -343,9 +401,9 @@ export function OnboardingWizard({
               data-autofocus={step === 1 ? true : undefined}
               onClick={goNext}
               disabled={!canContinue() || saving}
-              loading={saving && step === 6}
+              loading={saving && step === 7}
             >
-              {step === 1 ? "Get Started" : step === 6 ? "Finish" : "Continue"}
+              {step === 1 ? "Get Started" : step === 7 ? "Finish" : "Continue"}
             </Button>
           </div>
         )}
@@ -366,7 +424,7 @@ function WelcomeStep({ titleId }: { titleId: string }) {
       <motion.span
         variants={fadeIn}
         aria-hidden
-        className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-ai-strong to-ai text-ai-ink shadow-[0_0_28px_rgb(139_92_246/0.35)] ring-1 ring-ai/40"
+        className="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-ai-strong to-ai text-ai-ink shadow-[0_0_28px_rgb(214_40_40/0.35)] ring-1 ring-ai/40"
       >
         <svg viewBox="0 0 24 24" className="h-7 w-7" fill="currentColor">
           <path d="M12 2l1.6 5.2L19 9l-5.4 1.8L12 16l-1.6-5.2L5 9l5.4-1.8L12 2z" />
@@ -432,7 +490,7 @@ function ChoiceStep({
               className={cn(
                 "rounded-xl border px-4 py-3.5 text-left text-sm font-medium transition-[border-color,background-color,box-shadow,transform] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 active:scale-[0.99]",
                 selected
-                  ? "border-brand/50 bg-brand/10 text-fg shadow-[0_0_20px_rgb(52_211_153/0.12)]"
+                  ? "border-brand/50 bg-brand/10 text-fg shadow-[0_0_20px_rgb(214_40_40/0.12)]"
                   : "border-line bg-elevated/60 text-fg-muted hover:border-line-strong hover:text-fg",
               )}
             >
@@ -483,11 +541,115 @@ function SectorStep({
               className={cn(
                 "rounded-full border px-3.5 py-2 text-xs font-medium transition-[border-color,background-color,color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ai/40",
                 active
-                  ? "border-ai/50 bg-ai-soft text-ai shadow-[0_0_16px_rgb(139_92_246/0.18)]"
+                  ? "border-ai/50 bg-ai-soft text-ai shadow-[0_0_16px_rgb(214_40_40/0.18)]"
                   : "border-line bg-elevated/50 text-fg-muted hover:border-line-strong hover:text-fg",
               )}
             >
               {sector}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function GoalsStep({
+  titleId,
+  experience,
+  horizon,
+  budget,
+  goals,
+  onExperience,
+  onHorizon,
+  onBudget,
+  onGoals,
+}: {
+  titleId: string;
+  experience: string | null;
+  horizon: string | null;
+  budget: string | null;
+  goals: string | null;
+  onExperience: (value: string) => void;
+  onHorizon: (value: string) => void;
+  onBudget: (value: string) => void;
+  onGoals: (value: string) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-5">
+      <div>
+        <h2
+          id={titleId}
+          className="font-display text-xl font-semibold tracking-tight text-fg"
+        >
+          Goals & Experience
+        </h2>
+        <p className="mt-1.5 text-sm text-fg-muted">
+          Help the AI match recommendations to your plan.
+        </p>
+      </div>
+      <MiniChoice
+        label="Experience"
+        options={EXPERIENCE_OPTIONS}
+        value={experience}
+        onChange={onExperience}
+      />
+      <MiniChoice
+        label="Investment Horizon"
+        options={HORIZON_OPTIONS}
+        value={horizon}
+        onChange={onHorizon}
+      />
+      <MiniChoice
+        label="Investment Budget"
+        options={BUDGET_OPTIONS}
+        value={budget}
+        onChange={onBudget}
+      />
+      <MiniChoice
+        label="Primary Goal"
+        options={GOAL_OPTIONS}
+        value={goals}
+        onChange={onGoals}
+      />
+    </div>
+  );
+}
+
+function MiniChoice({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string;
+  options: readonly string[];
+  value: string | null;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="text-xs font-medium uppercase tracking-widest text-fg-subtle">
+        {label}
+      </p>
+      <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={label}>
+        {options.map((option) => {
+          const selected = value === option;
+          return (
+            <button
+              key={option}
+              type="button"
+              role="radio"
+              aria-checked={selected}
+              onClick={() => onChange(option)}
+              className={cn(
+                "rounded-full border px-3 py-1.5 text-xs font-medium transition-[border-color,background-color,color] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40",
+                selected
+                  ? "border-brand/50 bg-brand/10 text-fg"
+                  : "border-line bg-elevated/50 text-fg-muted hover:border-line-strong hover:text-fg",
+              )}
+            >
+              {option}
             </button>
           );
         })}

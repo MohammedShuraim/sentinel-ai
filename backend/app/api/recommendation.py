@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.api.dependencies import get_current_user
 from app.core.dependencies import llm_service, rag_service
+from app.crud.portfolio import get_user_portfolio
 from app.crud.stock import get_all_stocks
 from app.db.dependencies import get_db
 from app.models.investor_profile import InvestorProfile
@@ -16,6 +17,7 @@ from app.services.document_builder_service import DocumentBuilderService
 from app.services.investor_profile_formatter_service import (
     InvestorProfileFormatterService,
 )
+from app.services.providers.finnhub_provider import FinnhubProvider
 from app.services.recommendation_explanation_service import (
     RecommendationExplanationService,
 )
@@ -46,6 +48,13 @@ def get_recommendations(
 
     stocks = get_all_stocks(db)
     ranked = recommendation_service.rank_stocks(profile, stocks)
+
+    owned_ids = {
+        holding.stock_id for holding in get_user_portfolio(db, current_user.id)
+    }
+
+    # Prefer actionable new ideas, but keep owned names if they still rank
+    # so the UI can surface already_owned + AI can explain position sizing.
     top_stocks = ranked[:5]
 
     profile_formatter = InvestorProfileFormatterService()
@@ -53,8 +62,10 @@ def get_recommendations(
 
     document_builder = DocumentBuilderService()
     explanation_service = RecommendationExplanationService(llm_service)
+    finnhub = FinnhubProvider()
 
     recommendations: list[RecommendationItem] = []
+    horizon = recommendation_service.time_horizon_for_profile(profile)
 
     for stock, score in top_stocks:
         stock_context = document_builder.build_document(
@@ -62,8 +73,16 @@ def get_recommendations(
             stock.fundamental,
             list(stock.news),
         )
+        owned = stock.id in owned_ids
+        ownership_note = (
+            f"\nThe investor ALREADY OWNS {stock.ticker}. "
+            "Explain Increase Position / Average Down / Hold / Take Profit / "
+            "Diversify — do not pitch it as a brand-new first buy."
+            if owned
+            else ""
+        )
         explanation = explanation_service.explain(
-            profile=profile_text,
+            profile=profile_text + ownership_note,
             stock_context=stock_context,
             investor_profile=profile,
             stock=stock,
@@ -71,6 +90,10 @@ def get_recommendations(
         sources = rag_service.retrieve_documents(
             db,
             f"{stock.company_name} {stock.ticker}",
+        )
+
+        expected_pct, expected_label = (
+            recommendation_service.expected_return_for_score(score)
         )
 
         recommendations.append(
@@ -81,6 +104,14 @@ def get_recommendations(
                 score=score,
                 explanation=explanation,
                 sources=sources,
+                sector=stock.sector,
+                current_price=finnhub.fetch_quote(stock.ticker),
+                expected_return_pct=expected_pct,
+                expected_return_label=expected_label,
+                risk_level=recommendation_service.risk_level_for_stock(stock),
+                time_horizon=horizon,
+                confidence=recommendation_service.confidence_for_score(score),
+                already_owned=owned,
             )
         )
 

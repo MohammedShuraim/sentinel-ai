@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { ConfidenceBar } from "@/components/common/ConfidenceBar";
 import { SparkleIcon } from "@/components/common/icons";
+import { formatINR } from "@/lib/format";
 import {
   LABEL_ACCENTS,
   MAX_RECOMMENDATION_SCORE,
@@ -33,6 +34,23 @@ interface RecommendationCardProps {
   onAnalyze: () => void;
 }
 
+function Metric({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="rounded-xl border border-line/70 bg-surface/60 px-3 py-2.5">
+      <p className="text-[10px] font-medium uppercase tracking-widest text-fg-subtle">
+        {label}
+      </p>
+      <p className="tnum mt-1 text-sm font-semibold text-fg">{value}</p>
+    </div>
+  );
+}
+
 export function RecommendationCard({
   item,
   stock,
@@ -44,8 +62,17 @@ export function RecommendationCard({
   onAnalyze,
 }: RecommendationCardProps) {
   const label = labelForScore(item.score);
-  const confidence = confidenceForScore(item.score);
+  const confidence = item.confidence ?? confidenceForScore(item.score);
   const accent = LABEL_ACCENTS[label];
+  const sector = item.sector ?? stock?.sector ?? "—";
+  const price =
+    item.current_price != null ? formatINR(item.current_price) : "—";
+  const expected =
+    item.expected_return_pct != null
+      ? `~${item.expected_return_pct.toFixed(0)}%`
+      : item.expected_return_label ?? "—";
+  const risk = item.risk_level ?? "—";
+  const horizon = item.time_horizon ?? "—";
 
   return (
     <Card
@@ -61,29 +88,49 @@ export function RecommendationCard({
 
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(85%_60%_at_85%_0%,rgb(167_139_250/0.07),transparent_60%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(85%_60%_at_85%_0%,rgb(214_40_40/0.07),transparent_60%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
       />
 
       <div className="relative flex items-start justify-between gap-3">
-        <div className="flex min-w-0 flex-col gap-1.5">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="tnum font-display text-lg font-semibold tracking-tight text-fg">
-              {item.ticker}
-            </span>
-            {stock ? <Badge variant="neutral">{stock.sector}</Badge> : null}
-            {watched ? (
-              <Badge variant="brand" className="shrink-0">
-                Watching
-              </Badge>
-            ) : null}
+        <div className="flex min-w-0 items-start gap-3">
+          <span
+            aria-hidden
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-brand/30 bg-brand-soft font-display text-sm font-semibold tracking-tight text-brand"
+          >
+            {item.ticker.slice(0, 2)}
+          </span>
+          <div className="flex min-w-0 flex-col gap-1.5">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="tnum font-display text-lg font-semibold tracking-tight text-fg">
+                {item.ticker}
+              </span>
+              <Badge variant="neutral">{sector}</Badge>
+              {item.already_owned ? (
+                <Badge variant="warn" className="shrink-0">
+                  Owned
+                </Badge>
+              ) : null}
+              {watched ? (
+                <Badge variant="brand" className="shrink-0">
+                  Watching
+                </Badge>
+              ) : null}
+            </div>
+            <h3 className="line-clamp-1 text-sm text-fg-muted">
+              {item.company_name}
+            </h3>
           </div>
-          <h3 className="line-clamp-1 text-sm text-fg-muted">
-            {item.company_name}
-          </h3>
         </div>
         <Badge variant={labelVariant(label)} dot className="shrink-0">
           {label}
         </Badge>
+      </div>
+
+      <div className="relative grid grid-cols-2 gap-2">
+        <Metric label="Current Price" value={price} />
+        <Metric label="Expected Return" value={expected} />
+        <Metric label="Risk Level" value={risk} />
+        <Metric label="Time Horizon" value={horizon} />
       </div>
 
       <div className="relative flex flex-col gap-1.5">

@@ -21,7 +21,7 @@ export default function NotFound() {
       </p>
       <Link
         href="/dashboard"
-        className="mt-1 inline-flex h-10 items-center rounded-xl border border-line bg-surface px-5 text-sm font-medium text-fg transition-[border-color,color,box-shadow] duration-200 hover:border-brand/50 hover:text-brand hover:shadow-[0_0_16px_rgb(52_211_153/0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+        className="mt-1 inline-flex h-10 items-center rounded-xl border border-line bg-surface px-5 text-sm font-medium text-fg transition-[border-color,color,box-shadow] duration-200 hover:border-brand/50 hover:text-brand hover:shadow-[0_0_16px_rgb(214_40_40/0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
       >
         Back to dashboard
       </Link>

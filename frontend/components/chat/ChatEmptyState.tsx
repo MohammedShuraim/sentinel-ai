@@ -34,7 +34,7 @@ export function ChatEmptyState({
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(45%_45%_at_50%_32%,rgb(167_139_250/0.07),transparent_70%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(45%_45%_at_50%_32%,rgb(214_40_40/0.07),transparent_70%)]"
       />
 
       <motion.span
@@ -43,7 +43,7 @@ export function ChatEmptyState({
         className="relative grid place-items-center"
       >
         <span className="absolute h-20 w-20 rounded-full bg-ai/15 blur-xl" />
-        <span className="relative grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-ai-strong to-ai text-ai-ink shadow-[0_0_36px_rgb(139_92_246/0.4)] ring-1 ring-ai/40">
+        <span className="relative grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-ai-strong to-ai text-ai-ink shadow-[0_0_36px_rgb(214_40_40/0.4)] ring-1 ring-ai/40">
           <SparkIcon className="h-7 w-7" />
         </span>
       </motion.span>
@@ -70,7 +70,7 @@ export function ChatEmptyState({
             key={prompt}
             type="button"
             onClick={() => onPrompt(prompt)}
-            className="rounded-full border border-line bg-surface px-4 py-2 text-sm text-fg-muted transition-[border-color,background-color,color,box-shadow,transform] duration-200 hover:-translate-y-px hover:border-ai/40 hover:bg-ai-soft hover:text-ai hover:shadow-[0_0_16px_rgb(139_92_246/0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ai/50 active:scale-[0.98]"
+            className="rounded-full border border-line bg-surface px-4 py-2 text-sm text-fg-muted transition-[border-color,background-color,color,box-shadow,transform] duration-200 hover:-translate-y-px hover:border-ai/40 hover:bg-ai-soft hover:text-ai hover:shadow-[0_0_16px_rgb(214_40_40/0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ai/50 active:scale-[0.98]"
           >
             {prompt}
           </button>

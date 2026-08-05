@@ -85,6 +85,14 @@ export interface RecommendationItem {
   score: number;
   explanation: string;
   sources: RetrievedDocument[];
+  sector?: string | null;
+  current_price?: number | null;
+  expected_return_pct?: number | null;
+  expected_return_label?: string | null;
+  risk_level?: string | null;
+  time_horizon?: string | null;
+  confidence?: number | null;
+  already_owned?: boolean;
 }
 
 export interface RecommendationResponse {
@@ -99,6 +107,10 @@ export interface InvestorProfileRead {
   investment_style: string | null;
   preferred_market_cap: string | null;
   dividend_preference: boolean | null;
+  investment_horizon: string | null;
+  investment_budget: string | null;
+  investment_goals: string | null;
+  experience_level: string | null;
   has_preferences: boolean;
 }
 
@@ -108,6 +120,10 @@ export interface InvestorProfileUpdate {
   investment_style?: string | null;
   preferred_market_cap?: string | null;
   dividend_preference?: boolean | null;
+  investment_horizon?: string | null;
+  investment_budget?: string | null;
+  investment_goals?: string | null;
+  experience_level?: string | null;
 }
 
 export interface ChatRequest {

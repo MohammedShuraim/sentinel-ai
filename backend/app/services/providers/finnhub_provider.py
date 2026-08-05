@@ -39,6 +39,35 @@ class FinnhubProvider:
 
             return response.json()
 
+    def fetch_quote(self, ticker: str) -> float | None:
+        """Best-effort last price for a ticker. Returns None on any failure.
+
+        Tries bare ticker and common NSE suffixes. Never raises to callers.
+        """
+        if not self.api_key:
+            return None
+
+        symbols = [
+            ticker,
+            f"{ticker}.NS",
+            f"NSE:{ticker}",
+        ]
+        for symbol in symbols:
+            try:
+                with httpx.Client(timeout=2.5) as client:
+                    response = client.get(
+                        f"{self.base_url}/quote",
+                        params={"symbol": symbol, "token": self.api_key},
+                    )
+                    response.raise_for_status()
+                    payload = response.json()
+                price = payload.get("c")
+                if isinstance(price, (int, float)) and price > 0:
+                    return float(price)
+            except Exception:
+                continue
+        return None
+
     def fetch_fundamentals(self, ticker: str) -> dict:
         """Fetch company fundamentals for a single stock from Finnhub.
 

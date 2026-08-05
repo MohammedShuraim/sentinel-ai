@@ -160,7 +160,8 @@ export default function RecommendationsPage() {
       stockId: item.stock_id,
       ticker: item.ticker,
       companyName: item.company_name,
-      averagePrice: undefined,
+      averagePrice:
+        item.current_price != null ? item.current_price : undefined,
       ownedQuantity: 0,
     });
   }
@@ -209,11 +210,11 @@ export default function RecommendationsPage() {
       {/* subtle AI intelligence atmosphere */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 -top-6 -z-10 h-[400px] bg-[radial-gradient(58%_58%_at_50%_0%,rgb(167_139_250/0.06),transparent_70%)]"
+        className="pointer-events-none absolute inset-x-0 -top-6 -z-10 h-[400px] bg-[radial-gradient(58%_58%_at_50%_0%,rgb(214_40_40/0.06),transparent_70%)]"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 -top-6 -z-10 h-[400px] bg-[radial-gradient(32%_46%_at_88%_14%,rgb(52_211_153/0.04),transparent_70%)]"
+        className="pointer-events-none absolute inset-x-0 -top-6 -z-10 h-[400px] bg-[radial-gradient(32%_46%_at_88%_14%,rgb(214_40_40/0.04),transparent_70%)]"
       />
 
       <motion.div

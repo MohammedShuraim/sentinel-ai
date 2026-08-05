@@ -31,6 +31,10 @@ def _to_read(profile, recommendation_service: RecommendationService) -> Investor
         investment_style=profile.investment_style,
         preferred_market_cap=profile.preferred_market_cap,
         dividend_preference=profile.dividend_preference,
+        investment_horizon=profile.investment_horizon,
+        investment_budget=profile.investment_budget,
+        investment_goals=profile.investment_goals,
+        experience_level=profile.experience_level,
         has_preferences=recommendation_service.has_preferences(profile),
     )
 

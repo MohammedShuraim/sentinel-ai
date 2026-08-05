@@ -12,7 +12,7 @@ interface Particle {
   x: number;
   y: number;
   size: number;
-  purple: boolean;
+    accent: boolean;
   duration: number;
   delay: number;
   drift: number;
@@ -26,7 +26,7 @@ function generateParticles(): Particle[] {
     x: 4 + rand() * 92,
     y: 8 + rand() * 84,
     size: 2 + rand() * 3,
-    purple: rand() < 0.3,
+    accent: rand() < 0.35,
     duration: 16 + rand() * 10,
     delay: -rand() * 26,
     drift: 36 + rand() * 34,
@@ -43,10 +43,10 @@ export function Particles() {
   return (
     <motion.div style={{ x, y }} className="absolute inset-0 overflow-hidden">
       {particles.map((p, i) => {
-        const color = p.purple ? "#a78bfa" : "#34d399";
-        const glow = p.purple
-          ? "rgb(167 139 250 / 0.5)"
-          : "rgb(52 211 153 / 0.5)";
+        const color = p.accent ? "#E63946" : "#D62828";
+        const glow = p.accent
+          ? "rgb(230 57 70 / 0.45)"
+          : "rgb(214 40 40 / 0.4)";
         const style = {
           left: `${p.x}%`,
           top: `${p.y}%`,

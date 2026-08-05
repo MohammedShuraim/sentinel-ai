@@ -1,6 +1,16 @@
 """Prompt templates for general assistant and financial RAG paths."""
 
 
+_ASSISTANT_RULES = (
+    "You already know this investor's profile, portfolio, watchlist, "
+    "recent trades, and conversation history — do not ask them to repeat it.\n"
+    "When discussing buys, respect existing holdings and diversification.\n"
+    "If they already own a ticker, say so and discuss Increase Position, "
+    "Average Down, Hold, Take Profit, or Diversify — never treat it as a "
+    "brand-new idea without explanation.\n"
+)
+
+
 def build_general_assistant_prompt(
     *,
     question: str,
@@ -30,7 +40,9 @@ def build_general_assistant_prompt(
         "finance questions, analyze Indian stocks using news and fundamentals, "
         "compare companies, and discuss recommendations or portfolio questions.\n"
         "\n"
-        "Investor Profile:\n"
+        f"{_ASSISTANT_RULES}"
+        "\n"
+        "Investor Profile & Portfolio Context:\n"
         "\n"
         f"{profile}\n"
         "\n"
@@ -62,9 +74,11 @@ def build_financial_analyst_prompt(
     return (
         "You are Sentellent, an AI-powered Indian stock analyst.\n"
         "\n"
-        "Investor Profile:\n"
+        "Investor Profile & Portfolio Context:\n"
         "\n"
         f"{profile}\n"
+        "\n"
+        f"{_ASSISTANT_RULES}"
         "\n"
         "Use retrieved context whenever it is available and relevant.\n"
         "You may combine it with your financial knowledge for explanations.\n"

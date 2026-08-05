@@ -144,7 +144,7 @@ export function StockDetailsDrawer({
             onClose();
             router.push(openStockAnalysis(stock));
           }}
-          className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-ai-strong to-ai text-sm font-medium text-ai-ink shadow-[0_0_0_1px_rgb(167_139_250/0.3),0_0_20px_rgb(139_92_246/0.25)] transition-all hover:brightness-110 hover:shadow-[0_0_0_1px_rgb(167_139_250/0.4),0_0_28px_rgb(139_92_246/0.35)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ai/50"
+          className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-ai-strong to-ai text-sm font-medium text-ai-ink shadow-[0_0_0_1px_rgb(214_40_40/0.3),0_0_20px_rgb(214_40_40/0.25)] transition-all hover:brightness-110 hover:shadow-[0_0_0_1px_rgb(214_40_40/0.4),0_0_28px_rgb(214_40_40/0.35)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ai/50"
         >
           <SparkleIcon className="h-4 w-4" />
           AI Analysis
@@ -156,7 +156,7 @@ export function StockDetailsDrawer({
           {/* AI accent hairline */}
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgb(167_139_250/0.45),rgb(52_211_153/0.45),transparent)] bg-[size:200%_100%] animate-shimmer"
+            className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgb(214_40_40/0.45),rgb(214_40_40/0.45),transparent)] bg-[size:200%_100%] animate-shimmer"
           />
           <section className="flex flex-col gap-2">
             <SectionTitle>Company Information</SectionTitle>
