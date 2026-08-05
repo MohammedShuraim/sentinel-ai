@@ -8,9 +8,11 @@ import type { StockRead } from "@/lib/api/types";
 export function StockGrid({
   stocks,
   onViewDetails,
+  onBuy,
 }: {
   stocks: StockRead[];
   onViewDetails?: (stock: StockRead) => void;
+  onBuy?: (stock: StockRead) => void;
 }) {
   const reduceMotion = useReducedMotion();
 
@@ -26,7 +28,11 @@ export function StockGrid({
           key={stock.id}
           variants={reduceMotion ? undefined : fadeUp}
         >
-          <StockCard stock={stock} onViewDetails={onViewDetails} />
+          <StockCard
+            stock={stock}
+            onViewDetails={onViewDetails}
+            onBuy={onBuy}
+          />
         </motion.div>
       ))}
     </motion.div>

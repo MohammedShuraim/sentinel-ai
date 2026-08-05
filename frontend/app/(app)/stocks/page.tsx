@@ -16,6 +16,7 @@ import { StockGrid } from "@/components/stocks/StockGrid";
 import { StockSkeleton } from "@/components/stocks/StockSkeleton";
 import { StockDetailsDrawer } from "@/components/stocks/StockDetailsDrawer";
 import { Badge } from "@/components/ui/Badge";
+import { TradeModal, type TradeTarget } from "@/components/portfolio/TradeModal";
 import {
   MOST_ACTIVE_TICKERS,
   TOP_GAINERS,
@@ -69,11 +70,21 @@ function StocksContent() {
   const [sort, setSort] = useState<StockSort>("az");
   const [selectedStock, setSelectedStock] = useState<StockRead | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [tradeTarget, setTradeTarget] = useState<TradeTarget | null>(null);
   const deepLinkHandledRef = useRef(false);
 
   function openDetails(stock: StockRead) {
     setSelectedStock(stock);
     setDrawerOpen(true);
+  }
+
+  function openBuy(stock: StockRead) {
+    setTradeTarget({
+      stockId: stock.id,
+      ticker: stock.ticker,
+      companyName: stock.company_name,
+      ownedQuantity: 0,
+    });
   }
 
   useEffect(() => {
@@ -296,7 +307,11 @@ function StocksContent() {
             ) : null}
           </Card>
         ) : (
-          <StockGrid stocks={visibleStocks} onViewDetails={openDetails} />
+          <StockGrid
+            stocks={visibleStocks}
+            onViewDetails={openDetails}
+            onBuy={openBuy}
+          />
         )}
       </motion.div>
 
@@ -304,6 +319,20 @@ function StocksContent() {
         stock={selectedStock}
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
+        onBuy={(stock) => {
+          setDrawerOpen(false);
+          openBuy(stock);
+        }}
+      />
+
+      <TradeModal
+        mode="buy"
+        target={tradeTarget}
+        open={tradeTarget !== null}
+        onClose={() => setTradeTarget(null)}
+        onSuccess={() => {
+          setTradeTarget(null);
+        }}
       />
     </motion.div>
   );

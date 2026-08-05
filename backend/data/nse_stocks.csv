@@ -2,5 +2,30 @@ ticker,company_name,exchange,sector,industry
 RELIANCE,Reliance Industries Ltd.,NSE,Energy,Oil & Gas
 TCS,Tata Consultancy Services,NSE,Technology,IT Services
 INFY,Infosys Ltd.,NSE,Technology,IT Services
-HDFCBANK,HDFC Bank Ltd.,NSE,Financial Services,Banking
-ICICIBANK,ICICI Bank Ltd.,NSE,Financial Services,Banking
+HDFCBANK,HDFC Bank Ltd.,NSE,Banking,Private Banks
+ICICIBANK,ICICI Bank Ltd.,NSE,Banking,Private Banks
+SBIN,State Bank of India,NSE,Banking,Public Banks
+ITC,ITC Limited,NSE,FMCG,Diversified FMCG
+WIPRO,Wipro Ltd.,NSE,Technology,IT Services
+HCLTECH,HCL Technologies Ltd.,NSE,Technology,IT Services
+TECHM,Tech Mahindra Ltd.,NSE,Technology,IT Services
+TATASTEEL,Tata Steel Ltd.,NSE,Metals,Steel
+ADANIENT,Adani Enterprises Ltd.,NSE,Conglomerate,Infrastructure
+ONGC,Oil and Natural Gas Corporation,NSE,Energy,Oil & Gas
+SUNPHARMA,Sun Pharmaceutical Industries Ltd.,NSE,Pharma,Pharmaceuticals
+LT,Larsen & Toubro Ltd.,NSE,Infrastructure,Engineering
+BHARTIARTL,Bharti Airtel Ltd.,NSE,Telecom,Telecom Services
+AXISBANK,Axis Bank Ltd.,NSE,Banking,Private Banks
+BAJFINANCE,Bajaj Finance Ltd.,NSE,Financial Services,NBFC
+KOTAKBANK,Kotak Mahindra Bank Ltd.,NSE,Banking,Private Banks
+ASIANPAINT,Asian Paints Ltd.,NSE,FMCG,Paints
+MARUTI,Maruti Suzuki India Ltd.,NSE,Auto,Passenger Vehicles
+TITAN,Titan Company Ltd.,NSE,Consumer,Jewellery
+NESTLEIND,Nestle India Ltd.,NSE,FMCG,Food Products
+POWERGRID,Power Grid Corporation of India,NSE,Energy,Power Transmission
+NTPC,NTPC Ltd.,NSE,Energy,Power Generation
+ULTRACEMCO,UltraTech Cement Ltd.,NSE,Infrastructure,Cement
+HINDUNILVR,Hindustan Unilever Ltd.,NSE,FMCG,Personal Care
+BAJAJ-AUTO,Bajaj Auto Ltd.,NSE,Auto,Two Wheelers
+DRREDDY,Dr. Reddy's Laboratories Ltd.,NSE,Pharma,Pharmaceuticals
+CIPLA,Cipla Ltd.,NSE,Pharma,Pharmaceuticals

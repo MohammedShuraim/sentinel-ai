@@ -46,10 +46,14 @@ const SECTIONS: {
 
 function PickCard({
   pick,
+  canBuy,
   onSelect,
+  onBuy,
 }: {
   pick: FeaturedPick;
+  canBuy: boolean;
   onSelect?: (pick: FeaturedPick) => void;
+  onBuy?: (pick: FeaturedPick) => void;
 }) {
   return (
     <Card
@@ -94,14 +98,49 @@ function PickCard({
         </div>
         <ConfidenceBar value={pick.confidence} />
       </div>
+      <div className="flex gap-2 pt-1">
+        <Button
+          variant="primary"
+          size="sm"
+          className="flex-1"
+          disabled={!canBuy}
+          title={
+            canBuy
+              ? `Buy ${pick.ticker}`
+              : "Stock not in market universe yet"
+          }
+          onClick={(event) => {
+            event.stopPropagation();
+            onBuy?.(pick);
+          }}
+        >
+          Buy
+        </Button>
+        <Button
+          variant="secondary"
+          size="sm"
+          className="flex-1"
+          onClick={(event) => {
+            event.stopPropagation();
+            onSelect?.(pick);
+          }}
+        >
+          Details
+        </Button>
+      </div>
     </Card>
   );
 }
 
 export function DiscoveryBoard({
+  tradableTickers,
   onSelectTicker,
+  onBuy,
 }: {
+  /** Uppercase tickers that exist in the live stock universe (buyable). */
+  tradableTickers?: Set<string>;
   onSelectTicker?: (ticker: string) => void;
+  onBuy?: (pick: FeaturedPick) => void;
 }) {
   return (
     <div className="flex flex-col gap-8">
@@ -114,8 +153,9 @@ export function DiscoveryBoard({
             Explore the market while we personalise
           </h2>
           <p className="mt-1 max-w-xl text-sm text-fg-muted">
-            Complete your investor profile to replace these desks with fully
-            personalised AI recommendations.
+            Buy from these desks to build your portfolio now. After your
+            investor profile is ready, this page switches to fully personalised
+            AI recommendations with the same Buy flow.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -170,7 +210,11 @@ export function DiscoveryBoard({
                 <PickCard
                   key={`${section.title}-${pick.ticker}`}
                   pick={pick}
+                  canBuy={
+                    tradableTickers?.has(pick.ticker.toUpperCase()) ?? false
+                  }
                   onSelect={(selected) => onSelectTicker?.(selected.ticker)}
+                  onBuy={onBuy}
                 />
               ))}
             </div>

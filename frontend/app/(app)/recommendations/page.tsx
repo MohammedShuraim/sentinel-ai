@@ -39,6 +39,8 @@ import {
   labelForScore,
   labelRank,
 } from "@/lib/recommendations/scoring";
+import { stocksByTicker } from "@/lib/market/starterContent";
+import type { FeaturedPick } from "@/lib/market/starterContent";
 import type { RecommendationItem } from "@/lib/api/types";
 
 const collator = new Intl.Collator("en", { sensitivity: "base" });
@@ -170,12 +172,49 @@ export default function RecommendationsPage() {
   }
 
   function openTrade(item: RecommendationItem) {
+    if (item.stock_id <= 0) {
+      openDiscoveryTrade({
+        ticker: item.ticker,
+        companyName: item.company_name,
+        sector: item.sector ?? "",
+        thesis: item.explanation,
+        category: "featured",
+        riskLevel: item.risk_level ?? "Moderate",
+        timeHorizon: item.time_horizon ?? "Medium-term",
+        expectedReturnLabel: item.expected_return_label ?? "Moderate",
+        confidence: item.confidence ?? confidenceForScore(item.score),
+      });
+      return;
+    }
     setTradeTarget({
       stockId: item.stock_id,
       ticker: item.ticker,
       companyName: item.company_name,
       averagePrice:
         item.current_price != null ? item.current_price : undefined,
+      ownedQuantity: 0,
+    });
+  }
+
+  const tickerIndex = useMemo(() => stocksByTicker(stocksById), [stocksById]);
+  const tradableTickers = useMemo(
+    () => new Set(tickerIndex.keys()),
+    [tickerIndex],
+  );
+
+  function openDiscoveryTrade(pick: FeaturedPick) {
+    const stock = tickerIndex.get(pick.ticker.toUpperCase());
+    if (!stock) {
+      push(
+        `${pick.ticker} is not in the market universe yet. Browse Stocks after import, or try another pick.`,
+        "error",
+      );
+      return;
+    }
+    setTradeTarget({
+      stockId: stock.id,
+      ticker: stock.ticker,
+      companyName: stock.company_name,
       ownedQuantity: 0,
     });
   }
@@ -294,9 +333,11 @@ export default function RecommendationsPage() {
             </Card>
           ) : null}
           <DiscoveryBoard
+            tradableTickers={tradableTickers}
             onSelectTicker={(ticker) => {
               router.push(`/stocks?details=${encodeURIComponent(ticker)}`);
             }}
+            onBuy={openDiscoveryTrade}
           />
         </motion.div>
       ) : (

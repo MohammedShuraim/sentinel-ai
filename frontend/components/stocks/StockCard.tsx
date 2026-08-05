@@ -8,9 +8,11 @@ import type { StockRead } from "@/lib/api/types";
 export function StockCard({
   stock,
   onViewDetails,
+  onBuy,
 }: {
   stock: StockRead;
   onViewDetails?: (stock: StockRead) => void;
+  onBuy?: (stock: StockRead) => void;
 }) {
   return (
     <Card
@@ -55,15 +57,23 @@ export function StockCard({
 
       <div className="relative mt-auto flex items-center gap-2 border-t border-line/60 pt-3.5">
         <Button
+          variant="primary"
+          size="sm"
+          className="flex-1"
+          onClick={(event) => {
+            event.stopPropagation();
+            onBuy?.(stock);
+          }}
+        >
+          Buy
+        </Button>
+        <Button
           variant="secondary"
           size="sm"
           className="flex-1"
           onClick={() => onViewDetails?.(stock)}
         >
-          View Details
-        </Button>
-        <Button variant="ghost" size="sm" className="flex-1 hover:text-ai">
-          Analyze
+          Details
         </Button>
       </div>
     </Card>

@@ -17,6 +17,7 @@ interface StockDetailsDrawerProps {
   stock: StockRead | null;
   open: boolean;
   onClose: () => void;
+  onBuy?: (stock: StockRead) => void;
 }
 
 function InfoRow({
@@ -61,6 +62,7 @@ export function StockDetailsDrawer({
   stock,
   open,
   onClose,
+  onBuy,
 }: StockDetailsDrawerProps) {
   const router = useRouter();
   const [news, setNews] = useState<NewsRead[]>([]);
@@ -135,20 +137,36 @@ export function StockDetailsDrawer({
         ) : null
       }
       footer={
-        <button
-          type="button"
-          onClick={() => {
-            if (!stock) {
-              return;
-            }
-            onClose();
-            router.push(openStockAnalysis(stock));
-          }}
-          className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-ai-strong to-ai text-sm font-medium text-ai-ink shadow-[0_0_0_1px_rgb(214_40_40/0.3),0_0_20px_rgb(214_40_40/0.25)] transition-all hover:brightness-110 hover:shadow-[0_0_0_1px_rgb(214_40_40/0.4),0_0_28px_rgb(214_40_40/0.35)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ai/50"
-        >
-          <SparkleIcon className="h-4 w-4" />
-          AI Analysis
-        </button>
+        <div className="flex w-full flex-col gap-2 sm:flex-row">
+          {onBuy ? (
+            <Button
+              variant="primary"
+              className="flex-1"
+              onClick={() => {
+                if (!stock) {
+                  return;
+                }
+                onBuy(stock);
+              }}
+            >
+              Buy
+            </Button>
+          ) : null}
+          <button
+            type="button"
+            onClick={() => {
+              if (!stock) {
+                return;
+              }
+              onClose();
+              router.push(openStockAnalysis(stock));
+            }}
+            className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-ai-strong to-ai text-sm font-medium text-ai-ink shadow-[0_0_0_1px_rgb(214_40_40/0.3),0_0_20px_rgb(214_40_40/0.25)] transition-all hover:brightness-110 hover:shadow-[0_0_0_1px_rgb(214_40_40/0.4),0_0_28px_rgb(214_40_40/0.35)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ai/50"
+          >
+            <SparkleIcon className="h-4 w-4" />
+            AI Analysis
+          </button>
+        </div>
       }
     >
       {stock ? (
