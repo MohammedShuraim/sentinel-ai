@@ -66,17 +66,34 @@ export function RecentTransactions({
           Transactions could not be loaded right now.
         </p>
       ) : items.length === 0 ? (
-        <div className="flex flex-1 flex-col items-start justify-center gap-2 px-5 py-6">
-          <p className="text-sm font-medium text-fg">No transactions yet</p>
-          <p className="text-sm text-fg-muted">
-            Record your first buy from the portfolio page to start tracking
-            your activity.
+        <div className="flex flex-1 flex-col gap-3 px-5 py-6">
+          <Badge variant="brand" className="w-fit">
+            Getting started
+          </Badge>
+          <p className="text-sm font-medium text-fg">
+            Your activity feed will live here
           </p>
-          <Link href="/portfolio" className="mt-1">
-            <Button variant="secondary" size="sm">
-              Go to portfolio
-            </Button>
-          </Link>
+          <p className="text-sm text-fg-muted">
+            After your first buy from Recommendations or Portfolio, every trade
+            appears in this timeline with ticker, quantity, and price.
+          </p>
+          <ul className="mt-1 list-inside list-disc text-xs text-fg-subtle">
+            <li>Start with AI picks that match your risk profile</li>
+            <li>Use staggered entries instead of all-in buys</li>
+            <li>Review allocation after each transaction</li>
+          </ul>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <Link href="/recommendations">
+              <Button variant="primary" size="sm">
+                Buy from recommendations
+              </Button>
+            </Link>
+            <Link href="/portfolio">
+              <Button variant="secondary" size="sm">
+                View portfolio coach
+              </Button>
+            </Link>
+          </div>
         </div>
       ) : (
         <motion.ul

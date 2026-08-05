@@ -11,6 +11,7 @@ import {
   labelForScore,
   labelVariant,
 } from "@/lib/recommendations/scoring";
+import { DEFAULT_AI_INSIGHT } from "@/lib/market/starterContent";
 import type { RecommendationItem } from "@/lib/api/types";
 
 interface MarketInsightProps {
@@ -20,7 +21,7 @@ interface MarketInsightProps {
 }
 
 export function MarketInsight({ topPick, loading, error }: MarketInsightProps) {
-  const confidence = topPick ? confidenceForScore(topPick.score) : 0;
+  const confidence = topPick ? confidenceForScore(topPick.score) : 72;
   const label = topPick ? labelForScore(topPick.score) : null;
 
   return (
@@ -115,19 +116,43 @@ export function MarketInsight({ topPick, loading, error }: MarketInsightProps) {
           </div>
         </div>
       ) : (
-        <div className="relative flex flex-1 flex-col items-start justify-center gap-2 py-4">
-          <p className="text-sm font-medium text-fg">
-            No insight yet — teach the analyst your style
-          </p>
-          <p className="text-sm text-fg-muted">
-            Tell the AI analyst about your risk appetite and investment goals
-            in chat, and daily insights will appear here.
-          </p>
-          <Link href="/chat" className="mt-1">
-            <Button variant="secondary" size="sm">
-              Start a conversation
-            </Button>
-          </Link>
+        <div className="relative flex flex-1 flex-col gap-3.5">
+          <div className="flex items-baseline gap-3">
+            <h3 className="font-display text-xl font-semibold tracking-tight text-fg">
+              {DEFAULT_AI_INSIGHT.headline}
+            </h3>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center justify-between text-[11px] font-medium uppercase tracking-widest text-fg-subtle">
+              <span>Desk confidence</span>
+              <span className="tnum text-ai">{confidence}%</span>
+            </div>
+            <ConfidenceBar value={confidence} />
+          </div>
+          <figure className="relative rounded-xl border border-line/60 bg-bg/50 px-4 py-3.5">
+            <blockquote className="text-sm leading-relaxed text-fg-muted">
+              {DEFAULT_AI_INSIGHT.body}
+            </blockquote>
+          </figure>
+          <div className="flex flex-wrap gap-2">
+            {DEFAULT_AI_INSIGHT.focusTickers.map((ticker) => (
+              <Badge key={ticker} variant="brand" className="tnum">
+                {ticker}
+              </Badge>
+            ))}
+          </div>
+          <div className="mt-auto flex flex-wrap gap-2 pt-1">
+            <Link href="/recommendations">
+              <Button variant="secondary" size="sm">
+                Explore featured picks
+              </Button>
+            </Link>
+            <Link href="/chat">
+              <Button variant="ghost" size="sm">
+                Personalise in chat
+              </Button>
+            </Link>
+          </div>
         </div>
       )}
     </Card>

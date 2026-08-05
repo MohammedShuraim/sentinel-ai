@@ -13,6 +13,7 @@ import {
   labelForScore,
   labelVariant,
 } from "@/lib/recommendations/scoring";
+import { featuredAsRecommendationItems } from "@/lib/market/starterContent";
 import type { RecommendationItem } from "@/lib/api/types";
 
 interface RecommendationsPreviewProps {
@@ -26,7 +27,11 @@ export function RecommendationsPreview({
   loading,
   error,
 }: RecommendationsPreviewProps) {
-  const items = recommendations.slice(0, 3);
+  const personalised = recommendations.slice(0, 3);
+  const usingFeatured = personalised.length === 0;
+  const items = usingFeatured
+    ? featuredAsRecommendationItems().slice(0, 3)
+    : personalised;
   const reduceMotion = useReducedMotion();
 
   return (
@@ -48,74 +53,75 @@ export function RecommendationsPreview({
           Recommendations are temporarily unavailable. The analyst service may
           be rate-limited — try again shortly.
         </p>
-      ) : items.length === 0 ? (
-        <div className="flex flex-1 flex-col items-start justify-center gap-2 px-5 py-6">
-          <p className="text-sm font-medium text-fg">
-            No personalised picks yet
-          </p>
-          <p className="text-sm text-fg-muted">
-            Share your investment preferences with the AI analyst and tailored
-            recommendations will show up here.
-          </p>
-          <Link href="/chat" className="mt-1">
-            <Button variant="secondary" size="sm">
-              Set my preferences
-            </Button>
-          </Link>
-        </div>
       ) : (
-        <motion.ul
-          className="flex flex-col divide-y divide-line"
-          variants={staggerContainer}
-          initial="hidden"
-          animate="show"
-        >
-          {items.map((item, index) => {
-            const confidence = confidenceForScore(item.score);
-            const label = labelForScore(item.score);
-            return (
-              <motion.li
-                key={item.stock_id}
-                variants={reduceMotion ? undefined : fadeUp}
-                className="flex items-center gap-3 px-5 py-4 transition-colors duration-200 hover:bg-white/[0.03]"
-              >
-                <span
-                  aria-hidden
-                  className="tnum grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-elevated text-xs font-semibold text-fg-muted"
+        <>
+          {usingFeatured ? (
+            <div className="border-b border-line px-5 py-3">
+              <Badge variant="brand" className="mb-1">
+                Featured AI picks
+              </Badge>
+              <p className="text-xs text-fg-muted">
+                Personalised ranking appears after your investor profile is
+                ready.
+              </p>
+            </div>
+          ) : null}
+          <motion.ul
+            className="flex flex-col divide-y divide-line"
+            variants={staggerContainer}
+            initial="hidden"
+            animate="show"
+          >
+            {items.map((item, index) => {
+              const confidence =
+                item.confidence ?? confidenceForScore(item.score);
+              const label = labelForScore(item.score);
+              return (
+                <motion.li
+                  key={`${item.ticker}-${item.stock_id}`}
+                  variants={reduceMotion ? undefined : fadeUp}
+                  className="flex items-center gap-3 px-5 py-4 transition-colors duration-200 hover:bg-white/[0.03]"
                 >
-                  {index + 1}
-                </span>
-                <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-                  <div className="flex items-baseline gap-2">
-                    <p className="tnum truncate text-sm font-medium text-fg">
-                      {item.ticker}
-                    </p>
-                    <p className="truncate text-xs text-fg-subtle">
-                      {item.company_name}
-                    </p>
+                  <span
+                    aria-hidden
+                    className="tnum grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-elevated text-xs font-semibold text-fg-muted"
+                  >
+                    {index + 1}
+                  </span>
+                  <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+                    <div className="flex items-baseline gap-2">
+                      <p className="tnum truncate text-sm font-medium text-fg">
+                        {item.ticker}
+                      </p>
+                      <p className="truncate text-xs text-fg-subtle">
+                        {item.company_name}
+                      </p>
+                    </div>
+                    <ConfidenceBar value={confidence} className="h-1 max-w-40" />
                   </div>
-                  <ConfidenceBar value={confidence} className="h-1 max-w-40" />
-                </div>
-                <Badge
-                  variant={labelVariant(label)}
-                  className="tnum shrink-0 gap-1"
-                >
-                  <SparkIcon className="h-3 w-3" />
-                  {label}
-                </Badge>
-              </motion.li>
-            );
-          })}
-        </motion.ul>
+                  <Badge
+                    variant={labelVariant(label)}
+                    className="tnum shrink-0 gap-1"
+                  >
+                    <SparkIcon className="h-3 w-3" />
+                    {label}
+                  </Badge>
+                </motion.li>
+              );
+            })}
+          </motion.ul>
+        </>
       )}
 
-      {!loading && !error && items.length > 0 ? (
+      {!loading && !error ? (
         <div className="mt-auto border-t border-line px-5 py-3">
           <Link
             href="/recommendations"
             className="text-xs font-medium text-brand underline-offset-4 hover:underline"
           >
-            See all {recommendations.length} recommendations with analysis
+            {usingFeatured
+              ? "Explore featured & sector desks"
+              : `See all ${recommendations.length} recommendations with analysis`}
           </Link>
         </div>
       ) : null}

@@ -4,6 +4,12 @@ import { motion } from "framer-motion";
 import { Card } from "@/components/ui/Card";
 import { CountUp } from "@/components/common/CountUp";
 import { dashboardItem } from "@/components/dashboard/Section";
+import {
+  FEATURED_PICKS,
+  MARKET_INDICES,
+  POPULAR_WATCHLIST_TICKERS,
+  STARTER_PORTFOLIO,
+} from "@/lib/market/starterContent";
 import { formatINR, formatQuantity } from "@/lib/format";
 import type { PortfolioSummary } from "@/lib/api/types";
 
@@ -52,7 +58,10 @@ interface KpiCardsProps {
 }
 
 export function KpiCards({ summary, watchlistCount, loading }: KpiCardsProps) {
-  const cards = [
+  const hasPortfolio = (summary?.total_holdings ?? 0) > 0;
+  const nifty = MARKET_INDICES[0];
+
+  const portfolioCards = [
     {
       key: "invested",
       label: "Total invested",
@@ -61,6 +70,7 @@ export function KpiCards({ summary, watchlistCount, loading }: KpiCardsProps) {
       icon: icons.invested,
       tone: "text-brand bg-brand-soft",
       glow: "hover:border-brand/40 hover:shadow-[0_10px_30px_rgb(0_0_0/0.35),0_0_22px_rgb(214_40_40/0.12)]",
+      display: null as string | null,
     },
     {
       key: "holdings",
@@ -70,6 +80,7 @@ export function KpiCards({ summary, watchlistCount, loading }: KpiCardsProps) {
       icon: icons.holdings,
       tone: "text-info bg-info-soft",
       glow: "hover:border-info/40 hover:shadow-[0_10px_30px_rgb(0_0_0/0.35),0_0_22px_rgb(96_165_250/0.12)]",
+      display: null as string | null,
     },
     {
       key: "units",
@@ -79,6 +90,7 @@ export function KpiCards({ summary, watchlistCount, loading }: KpiCardsProps) {
       icon: icons.units,
       tone: "text-warn bg-warn-soft",
       glow: "hover:border-warn/40 hover:shadow-[0_10px_30px_rgb(0_0_0/0.35),0_0_22px_rgb(251_191_36/0.10)]",
+      display: null as string | null,
     },
     {
       key: "watchlist",
@@ -88,8 +100,58 @@ export function KpiCards({ summary, watchlistCount, loading }: KpiCardsProps) {
       icon: icons.watchlist,
       tone: "text-fg-muted bg-elevated",
       glow: "hover:border-line-strong hover:shadow-[0_10px_30px_rgb(0_0_0/0.35)]",
+      display: null as string | null,
     },
   ];
+
+  const discoveryCards = [
+    {
+      key: "nifty",
+      label: `${nifty?.name ?? "NIFTY 50"} · session`,
+      value: nifty?.value ?? null,
+      format: (v: number) =>
+        v.toLocaleString("en-IN", { maximumFractionDigits: 2 }),
+      icon: icons.invested,
+      tone: "text-brand bg-brand-soft",
+      glow: "hover:border-brand/40 hover:shadow-[0_10px_30px_rgb(0_0_0/0.35),0_0_22px_rgb(214_40_40/0.12)]",
+      display:
+        nifty != null
+          ? `${nifty.changePct >= 0 ? "+" : ""}${nifty.changePct.toFixed(2)}%`
+          : null,
+    },
+    {
+      key: "featured",
+      label: "Featured AI picks",
+      value: FEATURED_PICKS.length,
+      format: (v: number) => String(Math.round(v)),
+      icon: icons.holdings,
+      tone: "text-info bg-info-soft",
+      glow: "hover:border-info/40 hover:shadow-[0_10px_30px_rgb(0_0_0/0.35),0_0_22px_rgb(96_165_250/0.12)]",
+      display: "Ready to explore",
+    },
+    {
+      key: "starter",
+      label: "Starter allocation",
+      value: STARTER_PORTFOLIO.length,
+      format: (v: number) => `${Math.round(v)} names`,
+      icon: icons.units,
+      tone: "text-warn bg-warn-soft",
+      glow: "hover:border-warn/40 hover:shadow-[0_10px_30px_rgb(0_0_0/0.35),0_0_22px_rgb(251_191_36/0.10)]",
+      display: "Example basket",
+    },
+    {
+      key: "watchlist",
+      label: watchlistCount > 0 ? "Your watchlist" : "Popular watchlist",
+      value: watchlistCount > 0 ? watchlistCount : POPULAR_WATCHLIST_TICKERS.length,
+      format: (v: number) => String(Math.round(v)),
+      icon: icons.watchlist,
+      tone: "text-fg-muted bg-elevated",
+      glow: "hover:border-line-strong hover:shadow-[0_10px_30px_rgb(0_0_0/0.35)]",
+      display: watchlistCount > 0 ? null : "Suggested",
+    },
+  ];
+
+  const cards = hasPortfolio ? portfolioCards : discoveryCards;
 
   return (
     <motion.div
@@ -109,13 +171,18 @@ export function KpiCards({ summary, watchlistCount, loading }: KpiCardsProps) {
             {loading ? (
               <div className="skeleton h-8 w-24" />
             ) : (
-              <p className="tnum truncate font-display text-2xl font-semibold tracking-tight text-fg">
-                {card.value === null ? (
-                  "—"
-                ) : (
-                  <CountUp value={card.value} format={card.format} />
-                )}
-              </p>
+              <>
+                <p className="tnum truncate font-display text-2xl font-semibold tracking-tight text-fg">
+                  {card.value === null ? (
+                    "—"
+                  ) : (
+                    <CountUp value={card.value} format={card.format} />
+                  )}
+                </p>
+                {card.display ? (
+                  <p className="text-[11px] text-fg-subtle">{card.display}</p>
+                ) : null}
+              </>
             )}
           </div>
           <span

@@ -15,9 +15,25 @@ import { SortDropdown, type StockSort } from "@/components/stocks/SortDropdown";
 import { StockGrid } from "@/components/stocks/StockGrid";
 import { StockSkeleton } from "@/components/stocks/StockSkeleton";
 import { StockDetailsDrawer } from "@/components/stocks/StockDetailsDrawer";
+import { Badge } from "@/components/ui/Badge";
+import {
+  MOST_ACTIVE_TICKERS,
+  TOP_GAINERS,
+  TOP_LOSERS,
+  filterStocksByTickers,
+} from "@/lib/market/starterContent";
 import type { StockRead } from "@/lib/api/types";
+import { cn } from "@/lib/utils/cn";
 
 const collator = new Intl.Collator("en", { sensitivity: "base" });
+
+type MarketLens =
+  | "all"
+  | "gainers"
+  | "losers"
+  | "active"
+  | "recent"
+  | "sector";
 
 function sortStocks(stocks: StockRead[], sort: StockSort): StockRead[] {
   const sorted = [...stocks];
@@ -46,7 +62,10 @@ function StocksContent() {
   const searchParams = useSearchParams();
   const { stocks, loading, error, retry } = useStocks();
   const [query, setQuery] = useState("");
-  const [sector, setSector] = useState<string | null>(null);
+  const [sector, setSector] = useState<string | null>(
+    () => searchParams.get("sector"),
+  );
+  const [lens, setLens] = useState<MarketLens>("all");
   const [sort, setSort] = useState<StockSort>("az");
   const [selectedStock, setSelectedStock] = useState<StockRead | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -85,7 +104,28 @@ function StocksContent() {
 
   const visibleStocks = useMemo(() => {
     const term = query.trim().toLowerCase();
-    const filtered = stocks.filter((stock) => {
+    let pool = stocks;
+
+    if (lens === "gainers") {
+      const matched = filterStocksByTickers(
+        stocks,
+        TOP_GAINERS.map((mover) => mover.ticker),
+      );
+      pool = matched.length > 0 ? matched : stocks.slice(0, 8);
+    } else if (lens === "losers") {
+      const matched = filterStocksByTickers(
+        stocks,
+        TOP_LOSERS.map((mover) => mover.ticker),
+      );
+      pool = matched.length > 0 ? matched : stocks.slice(0, 8);
+    } else if (lens === "active") {
+      const matched = filterStocksByTickers(stocks, MOST_ACTIVE_TICKERS);
+      pool = matched.length > 0 ? matched : stocks.slice(0, 12);
+    } else if (lens === "recent") {
+      pool = [...stocks].slice(-12).reverse();
+    }
+
+    const filtered = pool.filter((stock) => {
       if (sector !== null && stock.sector !== sector) {
         return false;
       }
@@ -94,11 +134,20 @@ function StocksContent() {
       }
       return (
         stock.ticker.toLowerCase().includes(term) ||
-        stock.company_name.toLowerCase().includes(term)
+        stock.company_name.toLowerCase().includes(term) ||
+        stock.sector.toLowerCase().includes(term)
       );
     });
     return sortStocks(filtered, sort);
-  }, [stocks, query, sector, sort]);
+  }, [stocks, query, sector, sort, lens]);
+
+  const lenses: { id: MarketLens; label: string }[] = [
+    { id: "all", label: "All stocks" },
+    { id: "gainers", label: "Top gainers" },
+    { id: "losers", label: "Top losers" },
+    { id: "active", label: "Most active" },
+    { id: "recent", label: "Recently added" },
+  ];
 
   return (
     <motion.div
@@ -136,11 +185,84 @@ function StocksContent() {
       </motion.div>
 
       <motion.div variants={dashboardItem}>
-        <MarketSnapshot stocks={stocks} />
+        {loading ? (
+          <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <Card key={index} className="p-5">
+                <div className="skeleton h-3 w-20" />
+                <div className="skeleton mt-3 h-8 w-16" />
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <MarketSnapshot stocks={stocks} />
+        )}
+      </motion.div>
+
+      <motion.div
+        variants={dashboardItem}
+        className="flex flex-wrap gap-2"
+        role="tablist"
+        aria-label="Market lenses"
+      >
+        {lenses.map((entry) => (
+          <button
+            key={entry.id}
+            type="button"
+            role="tab"
+            aria-selected={lens === entry.id}
+            onClick={() => setLens(entry.id)}
+            className={cn(
+              "rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors",
+              lens === entry.id
+                ? "border-brand/50 bg-brand-soft text-brand"
+                : "border-line bg-elevated/50 text-fg-muted hover:text-fg",
+            )}
+          >
+            {entry.label}
+          </button>
+        ))}
+      </motion.div>
+
+      <motion.div
+        variants={dashboardItem}
+        className="grid grid-cols-1 gap-3 md:grid-cols-2"
+      >
+        <Card className="p-4" accent={false}>
+          <p className="mb-2 text-[11px] font-medium uppercase tracking-widest text-profit">
+            Top gainers · indicative
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {TOP_GAINERS.map((mover) => (
+              <Badge key={mover.ticker} variant="profit" className="tnum">
+                {mover.ticker} +{mover.changePct.toFixed(2)}%
+              </Badge>
+            ))}
+          </div>
+        </Card>
+        <Card className="p-4" accent={false}>
+          <p className="mb-2 text-[11px] font-medium uppercase tracking-widest text-loss">
+            Top losers · indicative
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {TOP_LOSERS.map((mover) => (
+              <Badge key={mover.ticker} variant="loss" className="tnum">
+                {mover.ticker} {mover.changePct.toFixed(2)}%
+              </Badge>
+            ))}
+          </div>
+        </Card>
       </motion.div>
 
       <motion.div variants={dashboardItem}>
-        <SectorFilters sectors={sectors} selected={sector} onSelect={setSector} />
+        <SectorFilters
+          sectors={sectors}
+          selected={sector}
+          onSelect={(next) => {
+            setSector(next);
+            setLens(next ? "sector" : "all");
+          }}
+        />
       </motion.div>
 
       <motion.div variants={dashboardItem}>

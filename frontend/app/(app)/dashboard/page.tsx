@@ -11,6 +11,7 @@ import { Hero } from "@/components/dashboard/Hero";
 import { KpiCards } from "@/components/dashboard/KpiCards";
 import { MarketInsight } from "@/components/dashboard/MarketInsight";
 import { MarketOverview } from "@/components/dashboard/MarketOverview";
+import { MarketPulse } from "@/components/dashboard/MarketPulse";
 import { Watchlist } from "@/components/dashboard/Watchlist";
 import { RecentTransactions } from "@/components/dashboard/RecentTransactions";
 import { RecommendationsPreview } from "@/components/dashboard/RecommendationsPreview";
@@ -49,6 +50,10 @@ export default function HomePage() {
         loading={data.loading}
       />
 
+      <Section title="Market pulse">
+        <MarketPulse />
+      </Section>
+
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         <Section title="Today's AI market insight" className="xl:col-span-2">
           <MarketInsight
@@ -63,7 +68,7 @@ export default function HomePage() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <Section title="Market overview" className="xl:col-span-2">
+        <Section title="Market news" className="xl:col-span-2">
           <MarketOverview
             news={data.news}
             stocksById={data.stocksById}
@@ -74,6 +79,7 @@ export default function HomePage() {
         <Section title="Watchlist" actionHref="/stocks" actionLabel="Manage">
           <Watchlist
             watchlist={data.watchlist}
+            stocksById={data.stocksById}
             loading={data.loading}
             error={data.errors.watchlist}
           />

@@ -26,6 +26,7 @@ import {
 import { RecommendationGrid } from "@/components/recommendations/RecommendationGrid";
 import { RecommendationDetailsDrawer } from "@/components/recommendations/RecommendationDetailsDrawer";
 import { RecommendationGeneratingState } from "@/components/recommendations/RecommendationGeneratingState";
+import { DiscoveryBoard } from "@/components/recommendations/DiscoveryBoard";
 import { openRecommendationAnalysis } from "@/lib/chat/chatNavigation";
 import { getApiErrorMessage } from "@/lib/api/client";
 import {
@@ -283,44 +284,20 @@ export default function RecommendationsPage() {
           />
         </motion.div>
       ) : items.length === 0 ? (
-        <motion.div variants={dashboardItem}>
-          <Card className="flex flex-col items-center gap-4 py-16 text-center">
-            <span
-              aria-hidden
-              className="grid h-14 w-14 place-items-center rounded-2xl bg-ai-soft text-ai"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                className="h-7 w-7"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={1.8}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1" />
-                <circle cx="12" cy="12" r="3.5" />
-              </svg>
-            </span>
-            <h2 className="font-display text-xl font-semibold text-fg">
-              No recommendations available
-            </h2>
-            <p className="max-w-md text-sm text-fg-muted">
-              {emptyReason ??
-                "No qualifying stocks matched your investor profile with the current market dataset."}
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              <Button variant="primary" onClick={() => void retry()}>
-                Try generating again
+        <motion.div variants={dashboardItem} className="flex flex-col gap-4">
+          {emptyReason ? (
+            <Card className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-fg-muted">{emptyReason}</p>
+              <Button variant="secondary" size="sm" onClick={() => void retry()}>
+                Retry personalised engine
               </Button>
-              <Link href="/chat">
-                <Button variant="secondary">
-                  <SparkleIcon className="h-4 w-4" />
-                  Ask AI Chat
-                </Button>
-              </Link>
-            </div>
-          </Card>
+            </Card>
+          ) : null}
+          <DiscoveryBoard
+            onSelectTicker={(ticker) => {
+              router.push(`/stocks?details=${encodeURIComponent(ticker)}`);
+            }}
+          />
         </motion.div>
       ) : (
         <>

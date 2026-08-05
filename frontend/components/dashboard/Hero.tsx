@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/Badge";
 import { CountUp } from "@/components/common/CountUp";
 import { dashboardItem } from "@/components/dashboard/Section";
 import { fadeUp, staggerContainer } from "@/lib/motion/presets";
+import { MARKET_INDICES } from "@/lib/market/starterContent";
 import { formatFullDate, formatINRCompact } from "@/lib/format";
 import type { PortfolioSummary } from "@/lib/api/types";
 
@@ -74,8 +75,9 @@ export function Hero({
             variants={fadeUp}
             className="max-w-xl text-sm text-fg-muted"
           >
-            Here is your market briefing for today — portfolio, watchlist and
-            what the AI analyst is seeing right now.
+            {(summary?.total_holdings ?? 0) > 0
+              ? "Here is your market briefing for today — portfolio, watchlist and what the AI analyst is seeing right now."
+              : "Your command center is live — indices, movers, AI insight and featured picks are ready even before your first trade."}
           </motion.p>
           <motion.div
             variants={fadeUp}
@@ -87,33 +89,56 @@ export function Hero({
             <Badge variant="neutral">
               {loading
                 ? "Syncing watchlist…"
-                : `${watchlistCount} ${
-                    watchlistCount === 1 ? "stock" : "stocks"
-                  } on watchlist`}
+                : watchlistCount > 0
+                  ? `${watchlistCount} ${
+                      watchlistCount === 1 ? "stock" : "stocks"
+                    } on watchlist`
+                  : "Discover mode · popular watchlists ready"}
             </Badge>
           </motion.div>
         </motion.div>
 
         <div className="flex flex-col items-start gap-1 lg:items-end">
           <p className="text-xs font-medium uppercase tracking-widest text-fg-subtle">
-            Total invested
+            {(summary?.total_holdings ?? 0) > 0
+              ? "Total invested"
+              : MARKET_INDICES[0]?.name ?? "NIFTY 50"}
           </p>
           {loading ? (
             <div className="skeleton h-10 w-40" />
+          ) : (summary?.total_holdings ?? 0) > 0 && summary ? (
+            <p className="tnum font-display text-4xl font-semibold tracking-tight text-fg drop-shadow-[0_0_28px_rgb(214_40_40/0.18)]">
+              <CountUp
+                value={summary.total_invested}
+                format={formatINRCompact}
+              />
+            </p>
           ) : (
             <p className="tnum font-display text-4xl font-semibold tracking-tight text-fg drop-shadow-[0_0_28px_rgb(214_40_40/0.18)]">
-              {summary ? (
-                <CountUp value={summary.total_invested} format={formatINRCompact} />
-              ) : (
-                "—"
-              )}
+              {(MARKET_INDICES[0]?.value ?? 0).toLocaleString("en-IN", {
+                maximumFractionDigits: 2,
+              })}
+              <span
+                className={
+                  (MARKET_INDICES[0]?.changePct ?? 0) >= 0
+                    ? "ml-2 text-lg text-profit"
+                    : "ml-2 text-lg text-loss"
+                }
+              >
+                {(MARKET_INDICES[0]?.changePct ?? 0) >= 0 ? "+" : ""}
+                {(MARKET_INDICES[0]?.changePct ?? 0).toFixed(2)}%
+              </span>
             </p>
           )}
           <Link
-            href="/portfolio"
+            href={
+              (summary?.total_holdings ?? 0) > 0 ? "/portfolio" : "/recommendations"
+            }
             className="mt-1 text-xs font-medium text-brand underline-offset-4 hover:underline"
           >
-            View portfolio breakdown
+            {(summary?.total_holdings ?? 0) > 0
+              ? "View portfolio breakdown"
+              : "Explore AI picks to start investing"}
           </Link>
         </div>
       </div>

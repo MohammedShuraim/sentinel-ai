@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { fadeUp, staggerContainer } from "@/lib/motion/presets";
 import { formatDateShort } from "@/lib/format";
+import { DEMO_NEWS } from "@/lib/market/starterContent";
 import type { NewsRead, StockRead } from "@/lib/api/types";
 
 interface MarketOverviewProps {
@@ -21,6 +22,7 @@ export function MarketOverview({
   error,
 }: MarketOverviewProps) {
   const items = news.slice(0, 5);
+  const usingDemo = !loading && !error && items.length === 0;
   const reduceMotion = useReducedMotion();
 
   return (
@@ -38,11 +40,53 @@ export function MarketOverview({
         <p className="px-5 py-8 text-center text-sm text-fg-muted">
           Market headlines could not be loaded right now.
         </p>
-      ) : items.length === 0 ? (
-        <p className="px-5 py-8 text-center text-sm text-fg-muted">
-          No market news has been imported yet. Headlines will appear here
-          once news data is synced.
-        </p>
+      ) : usingDemo ? (
+        <>
+          <div className="border-b border-line px-5 py-3">
+            <Badge variant="neutral">Market brief · curated</Badge>
+            <p className="mt-1 text-xs text-fg-muted">
+              Live imported headlines appear here once news sync is available.
+            </p>
+          </div>
+          <ul className="flex flex-col divide-y divide-line">
+            {DEMO_NEWS.map((article) => (
+              <li key={article.id}>
+                <a
+                  href={article.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex items-start gap-3.5 px-5 py-4 transition-colors duration-200 hover:bg-white/[0.03]"
+                >
+                  <span
+                    aria-hidden
+                    className="mt-0.5 grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-line bg-surface text-[11px] font-semibold uppercase tracking-wide text-brand"
+                  >
+                    {(article.tickerHint ?? article.source).slice(0, 2)}
+                  </span>
+                  <div className="flex min-w-0 flex-1 flex-col gap-2">
+                    <p className="line-clamp-2 text-sm font-medium leading-snug text-fg group-hover:text-brand">
+                      {article.title}
+                    </p>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {article.tickerHint ? (
+                        <Badge variant="brand" className="tnum">
+                          {article.tickerHint}
+                        </Badge>
+                      ) : null}
+                      <Badge variant="neutral">{article.source}</Badge>
+                      <span className="text-xs text-fg-subtle">
+                        {article.publishedLabel}
+                      </span>
+                      <span className="ml-auto text-xs font-medium text-brand">
+                        Read Original →
+                      </span>
+                    </div>
+                  </div>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </>
       ) : (
         <motion.ul
           className="flex flex-col divide-y divide-line"

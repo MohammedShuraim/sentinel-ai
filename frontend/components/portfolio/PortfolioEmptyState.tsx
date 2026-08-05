@@ -2,8 +2,13 @@
 
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
+import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { SparkIcon } from "@/components/common/icons";
+import {
+  DIVERSIFICATION_TIPS,
+  STARTER_PORTFOLIO,
+} from "@/lib/market/starterContent";
 import {
   EASE_OUT,
   fadeUp,
@@ -74,7 +79,7 @@ export function PortfolioEmptyState() {
               aria-label="View AI Recommendations"
             >
               <SparkIcon className="h-4 w-4" />
-              View AI Recommendations
+              Build from AI picks
             </Button>
           </Link>
           <Link href="/stocks" className="sm:min-w-[12rem]">
@@ -88,6 +93,72 @@ export function PortfolioEmptyState() {
               Browse Stocks
             </Button>
           </Link>
+        </motion.div>
+
+        <motion.div
+          variants={item}
+          className="w-full max-w-xl rounded-2xl border border-line bg-elevated/50 p-4 text-left"
+        >
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <p className="text-sm font-semibold text-fg">Starter portfolio example</p>
+            <Badge variant="neutral">Educational</Badge>
+          </div>
+          <div className="mb-4 flex h-2.5 overflow-hidden rounded-full bg-bg">
+            {STARTER_PORTFOLIO.map((holding, index) => (
+              <span
+                key={holding.ticker}
+                style={{
+                  width: `${holding.weightPct}%`,
+                  backgroundColor: [
+                    "#D62828",
+                    "#E63946",
+                    "#16C784",
+                    "#F4B400",
+                    "#A7A7A7",
+                    "#8B3A3A",
+                  ][index % 6],
+                }}
+                title={`${holding.ticker} ${holding.weightPct}%`}
+              />
+            ))}
+          </div>
+          <ul className="flex flex-col divide-y divide-line/60">
+            {STARTER_PORTFOLIO.map((holding) => (
+              <li
+                key={holding.ticker}
+                className="flex items-center justify-between gap-3 py-2.5"
+              >
+                <div className="min-w-0">
+                  <p className="tnum text-sm font-semibold text-fg">
+                    {holding.ticker}{" "}
+                    <span className="font-normal text-fg-subtle">
+                      · {holding.weightPct}%
+                    </span>
+                  </p>
+                  <p className="truncate text-xs text-fg-muted">
+                    {holding.companyName} — {holding.tip}
+                  </p>
+                </div>
+                <Badge variant="neutral">{holding.sector}</Badge>
+              </li>
+            ))}
+          </ul>
+        </motion.div>
+
+        <motion.div
+          variants={item}
+          className="w-full max-w-xl rounded-2xl border border-line/70 bg-bg/40 p-4 text-left"
+        >
+          <p className="mb-2 text-xs font-medium uppercase tracking-widest text-fg-subtle">
+            Diversification tips
+          </p>
+          <ul className="flex flex-col gap-2">
+            {DIVERSIFICATION_TIPS.map((tip) => (
+              <li key={tip} className="text-sm leading-relaxed text-fg-muted">
+                · {tip}
+              </li>
+            ))}
+          </ul>
         </motion.div>
 
         <motion.ol
