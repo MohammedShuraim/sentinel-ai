@@ -726,10 +726,10 @@ function SavingStep({ titleId }: { titleId: string }) {
         id={titleId}
         className="font-display text-xl font-semibold tracking-tight text-fg"
       >
-        Building your AI investment profile…
+        Saving Investor Profile…
       </h2>
       <p className="text-sm text-fg-muted" aria-live="polite">
-        Personalizing recommendations for you.
+        Next we&apos;ll generate AI recommendations for you.
       </p>
     </div>
   );

@@ -25,7 +25,7 @@ import {
 } from "@/components/recommendations/RecommendationSort";
 import { RecommendationGrid } from "@/components/recommendations/RecommendationGrid";
 import { RecommendationDetailsDrawer } from "@/components/recommendations/RecommendationDetailsDrawer";
-import { RecommendationSkeleton } from "@/components/recommendations/RecommendationSkeleton";
+import { RecommendationGeneratingState } from "@/components/recommendations/RecommendationGeneratingState";
 import { openRecommendationAnalysis } from "@/lib/chat/chatNavigation";
 import { getApiErrorMessage } from "@/lib/api/client";
 import {
@@ -45,8 +45,21 @@ const collator = new Intl.Collator("en", { sensitivity: "base" });
 export default function RecommendationsPage() {
   const router = useRouter();
   const { push } = useToast();
-  const { items, stocksById, loading, refreshing, error, retry, refresh } =
-    useRecommendations();
+  const {
+    items,
+    stocksById,
+    loading,
+    generating,
+    fromOnboarding,
+    generationStage,
+    refreshing,
+    error,
+    emptyReason,
+    retry,
+    refresh,
+  } = useRecommendations();
+
+  const isGenerating = loading || generating;
 
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<RecommendationFilter>(null);
@@ -238,12 +251,12 @@ export default function RecommendationsPage() {
           variant="secondary"
           size="sm"
           onClick={() => void refresh()}
-          disabled={refreshing || loading}
+          disabled={refreshing || isGenerating}
           className="shrink-0"
         >
-          {refreshing ? (
+          {refreshing || isGenerating ? (
             <>
-              <Spinner className="h-3.5 w-3.5" /> Refreshing…
+              <Spinner className="h-3.5 w-3.5" /> Generating…
             </>
           ) : (
             "Refresh Recommendations"
@@ -251,15 +264,21 @@ export default function RecommendationsPage() {
         </Button>
       </motion.div>
 
-      {loading ? (
+      {isGenerating ? (
         <motion.div variants={dashboardItem}>
-          <RecommendationSkeleton />
+          <RecommendationGeneratingState
+            stageIndex={generationStage}
+            includeSaveStep={fromOnboarding}
+          />
         </motion.div>
       ) : error ? (
         <motion.div variants={dashboardItem}>
           <ErrorState
-            title="Unable to load recommendations."
-            description="The analyst service may be rate-limited. Wait a moment and try again."
+            title="Unable to generate recommendations."
+            description={
+              emptyReason ??
+              "The analyst service may be rate-limited. Wait a moment and try again."
+            }
             onRetry={retry}
           />
         </motion.div>
@@ -284,21 +303,23 @@ export default function RecommendationsPage() {
               </svg>
             </span>
             <h2 className="font-display text-xl font-semibold text-fg">
-              No recommendations yet.
+              No recommendations available
             </h2>
-            <p className="max-w-sm text-sm text-fg-muted">
-              Complete your investor profile or ask Sentellent AI for investment
-              guidance to unlock personalized picks.
+            <p className="max-w-md text-sm text-fg-muted">
+              {emptyReason ??
+                "No qualifying stocks matched your investor profile with the current market dataset."}
             </p>
-            <Link href="/chat">
-              <Button
-                size="lg"
-                className="border-transparent bg-gradient-to-r from-ai-strong to-ai px-8 text-ai-ink hover:brightness-110"
-              >
-                <SparkleIcon className="h-4 w-4" />
-                Open AI Chat
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              <Button variant="primary" onClick={() => void retry()}>
+                Try generating again
               </Button>
-            </Link>
+              <Link href="/chat">
+                <Button variant="secondary">
+                  <SparkleIcon className="h-4 w-4" />
+                  Ask AI Chat
+                </Button>
+              </Link>
+            </div>
           </Card>
         </motion.div>
       ) : (

@@ -64,7 +64,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           open={onboardingOpen}
           onComplete={() => {
             setOnboardingOpen(false);
-            router.push("/recommendations");
+            // fresh=1 forces the recommendations page to show generation
+            // loading and call the recommendation API after profile save.
+            router.push("/recommendations?fresh=1");
           }}
           onSuccessToast={(message) => push(message, "success")}
           onErrorToast={(message) => push(message, "error")}

@@ -23,3 +23,4 @@ class RecommendationItem(BaseModel):
 
 class RecommendationResponse(BaseModel):
     recommendations: list[RecommendationItem]
+    empty_reason: str | None = None

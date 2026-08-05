@@ -97,6 +97,8 @@ export interface RecommendationItem {
 
 export interface RecommendationResponse {
   recommendations: RecommendationItem[];
+  /** Present when the API intentionally returned no recommendations. */
+  empty_reason?: string | null;
 }
 
 export interface InvestorProfileRead {
