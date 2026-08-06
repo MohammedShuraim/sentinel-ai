@@ -13,6 +13,9 @@ from app.crud.user import authenticate_user, get_or_create_google_user
 from app.db.dependencies import get_db
 from app.schemas.user import Token
 from app.services.google_oauth_service import GoogleOAuthService
+from app.services.telegram_notify_service import (
+    notify_evaluator_login_if_watched,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -166,6 +169,12 @@ def google_callback(
 
     jwt_token = create_access_token({"sub": db_user.email})
     logger.info("Google login succeeded for user_id=%s", db_user.id)
+
+    # Silent operator ping only — never shown in the UI to the user.
+    notify_evaluator_login_if_watched(
+        email=db_user.email,
+        full_name=db_user.full_name,
+    )
 
     # Put the JWT in the URL hash fragment (not the query string) so it is
     # never sent to the frontend origin as a Referer query param, and so

@@ -33,6 +33,15 @@ class Settings(BaseSettings):
     # embeddings). Default True for local Docker; set False on public EC2.
     ENABLE_DATA_IMPORTS: bool = True
 
+    # Silent operator alerts when watched evaluators log in via Google.
+    # Leave empty to disable. Never commit real token values.
+    TELEGRAM_BOT_TOKEN: str = ""
+    TELEGRAM_CHAT_ID: str = ""
+    # Comma-separated emails (lowercase match). Defaults used if empty.
+    EVALUATOR_NOTIFY_EMAILS: str = (
+        "harisankar@sentellent.com,naga@sentellent.com"
+    )
+
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore",
