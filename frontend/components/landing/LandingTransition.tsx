@@ -25,8 +25,8 @@ import { Logo } from "@/components/brand/Logo";
 /* Timing                                                              */
 /* ------------------------------------------------------------------ */
 
-const EXIT_MS = 580;
-const EXIT_MS_REDUCED = 220;
+const EXIT_MS = 280;
+const EXIT_MS_REDUCED = 120;
 const EASE: [number, number, number, number] = [0.32, 0.72, 0, 1];
 
 /* ------------------------------------------------------------------ */
@@ -71,6 +71,7 @@ export function LandingTransitionProvider({
       if (exitingRef.current) return;
       exitingRef.current = true;
       setExiting(true);
+      router.prefetch(href);
       timerRef.current = window.setTimeout(
         () => router.push(href),
         reduceMotion ? EXIT_MS_REDUCED : EXIT_MS,
@@ -79,7 +80,10 @@ export function LandingTransitionProvider({
     [router, reduceMotion],
   );
 
-  useEffect(() => () => window.clearTimeout(timerRef.current), []);
+  useEffect(() => {
+    router.prefetch("/login");
+    return () => window.clearTimeout(timerRef.current);
+  }, [router]);
 
   const value = useMemo(() => ({ exiting, startExit }), [exiting, startExit]);
 
