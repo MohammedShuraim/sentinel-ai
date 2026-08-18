@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from app.api.dependencies import get_current_user
-from app.core.dependencies import llm_service, rag_service
+from app.core.dependencies import llm_service
 from app.crud.portfolio import get_user_portfolio
 from app.db.dependencies import get_db
 from app.models.investor_profile import InvestorProfile
@@ -14,10 +14,6 @@ from app.models.user import User
 from app.schemas.recommendation import (
     RecommendationItem,
     RecommendationResponse,
-)
-from app.services.document_builder_service import DocumentBuilderService
-from app.services.investor_profile_formatter_service import (
-    InvestorProfileFormatterService,
 )
 from app.services.providers.finnhub_provider import FinnhubProvider
 from app.services.recommendation_explanation_service import (
@@ -121,10 +117,8 @@ def get_recommendations(
         holding.stock_id for holding in get_user_portfolio(db, current_user.id)
     }
 
-    profile_formatter = InvestorProfileFormatterService()
-    profile_text = profile_formatter.format_profile(profile)
-
-    document_builder = DocumentBuilderService()
+    # Dashboard and onboarding must stay fast on small instances.
+    # Use deterministic profile-fit copy here; Chat remains the LLM path.
     explanation_service = RecommendationExplanationService(llm_service)
     quotes = _fetch_quotes([stock.ticker for stock, _ in top_stocks])
 
@@ -132,29 +126,8 @@ def get_recommendations(
     horizon = recommendation_service.time_horizon_for_profile(profile)
 
     for stock, score in top_stocks:
-        stock_context = document_builder.build_document(
-            stock,
-            stock.fundamental,
-            list(stock.news),
-        )
         owned = stock.id in owned_ids
-        ownership_note = (
-            f"\nThe investor ALREADY OWNS {stock.ticker}. "
-            "Explain Increase Position / Average Down / Hold / Take Profit / "
-            "Diversify — do not pitch it as a brand-new first buy."
-            if owned
-            else ""
-        )
-        explanation = explanation_service.explain(
-            profile=profile_text + ownership_note,
-            stock_context=stock_context,
-            investor_profile=profile,
-            stock=stock,
-        )
-        sources = rag_service.retrieve_documents(
-            db,
-            f"{stock.company_name} {stock.ticker}",
-        )
+        explanation = explanation_service._fallback_explanation(profile, stock)
 
         expected_pct, expected_label = (
             recommendation_service.expected_return_for_score(score)
@@ -167,7 +140,7 @@ def get_recommendations(
                 ticker=stock.ticker,
                 score=score,
                 explanation=explanation,
-                sources=sources,
+                sources=[],
                 sector=stock.sector,
                 current_price=quotes.get(stock.ticker),
                 expected_return_pct=expected_pct,

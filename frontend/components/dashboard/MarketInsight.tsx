@@ -66,16 +66,6 @@ export function MarketInsight({ topPick, loading, error }: MarketInsightProps) {
           <div className="skeleton h-4 w-11/12" />
           <div className="skeleton h-4 w-3/5" />
         </div>
-      ) : error ? (
-        <div className="relative flex flex-1 flex-col items-start justify-center gap-2 py-4">
-          <p className="text-sm font-medium text-fg">
-            AI insight temporarily unavailable
-          </p>
-          <p className="text-sm text-fg-muted">
-            The analyst service did not respond in time. Your data is safe —
-            try again shortly.
-          </p>
-        </div>
       ) : topPick ? (
         <div className="relative flex flex-1 flex-col gap-3.5">
           <div className="flex items-baseline gap-3">

@@ -48,11 +48,6 @@ export function RecommendationsPreview({
             </li>
           ))}
         </ul>
-      ) : error ? (
-        <p className="px-5 py-8 text-center text-sm text-fg-muted">
-          Recommendations are temporarily unavailable. The analyst service may
-          be rate-limited — try again shortly.
-        </p>
       ) : (
         <>
           {usingFeatured ? (
@@ -113,7 +108,7 @@ export function RecommendationsPreview({
         </>
       )}
 
-      {!loading && !error ? (
+      {!loading ? (
         <div className="mt-auto border-t border-line px-5 py-3">
           <Link
             href="/recommendations"

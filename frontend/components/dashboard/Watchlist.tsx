@@ -84,10 +84,6 @@ export function Watchlist({
             <div key={index} className="skeleton h-7 w-20 rounded-full" />
           ))}
         </div>
-      ) : error ? (
-        <p className="py-4 text-sm text-fg-muted">
-          Your watchlist could not be loaded right now.
-        </p>
       ) : watchlist.length === 0 ? (
         <div className="flex flex-1 flex-col gap-4">
           <div>
