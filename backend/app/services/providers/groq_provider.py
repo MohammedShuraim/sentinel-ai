@@ -6,7 +6,7 @@ from app.services.providers.llm_provider import LLMProvider
 
 
 class GroqProvider(LLMProvider):
-    """Client for Groq's Llama models via the Chat Completions API.
+    """Client for Groq Chat Completions models.
 
     Initializes the Groq client once and generates text from a prompt.
     Performs no retrieval, embeddings, prompt construction, memory,
@@ -16,7 +16,7 @@ class GroqProvider(LLMProvider):
     def __init__(
         self,
         api_key: str,
-        model: str = "llama3-70b-8192",
+        model: str = "openai/gpt-oss-120b",
     ):
         """Create a Groq provider and initialize the client once."""
         self.api_key = api_key

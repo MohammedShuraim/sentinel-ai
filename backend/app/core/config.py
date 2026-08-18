@@ -18,7 +18,9 @@ class Settings(BaseSettings):
     GOOGLE_API_KEY: str = ""
 
     GROQ_API_KEY: str = ""
-    GROQ_MODEL: str = "llama-3.3-70b-versatile"
+    # Groq decommissioned llama-3.3-70b-versatile on 2026-08-16.
+    # Recommended replacement: openai/gpt-oss-120b (or qwen/qwen3.6-27b).
+    GROQ_MODEL: str = "openai/gpt-oss-120b"
     PRIMARY_PROVIDER: str = "gemini"
     FALLBACK_PROVIDER: str = "groq"
 
